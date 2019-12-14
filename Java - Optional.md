@@ -73,6 +73,7 @@ If the value is present, then apply the function passed as argument in the value
 	
 	
 ## References
-	[Using Optional Correctly](https://dzone.com/articles/using-optional-correctly-is-not-optional)
+
+[Using Optional Correctly](https://dzone.com/articles/using-optional-correctly-is-not-optional)
 	
-	[Optional no Java 8 e no Java 9](https://medium.com/@racc.costa/optional-no-java-8-e-no-java-9-7c52c4b797f1)
+[Optional no Java 8 e no Java 9](https://medium.com/@racc.costa/optional-no-java-8-e-no-java-9-7c52c4b797f1)
