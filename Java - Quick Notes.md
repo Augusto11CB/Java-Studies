@@ -39,7 +39,7 @@ The only fields allowed in an interface definition are constants that are declar
 
 ## Generics 
 
-### Problem Contextualisation
+### Problem Contextualisation 1
 ```java 
 List shapes = new ArrayList();   // Create a List to hold shapes 
 // Create some centered shapes, and store them in the list
@@ -52,6 +52,23 @@ c = (CentredCircle)shapes.get(0);
 // Next line causes a runtime failure
  CenteredCircle c = (CentredCircle)shapes.get(1);
 ```
+
 A problem with this code stems from the requirement to perform a cast to get the shape objects back out in a usable form—the List doesn’t know what type of objects it contains. Not only that, but it’s actually possible to put different types of objects into the same container—and everything will work fine until an illegal cast is used, and the program crashes.
 
+### Solution for Homogeneous collections - Problem Contextualisation 1
+To indicate that a type is a container that holds instances of another reference type, we enclose the payload type that the container holds within angle brackets
 
+```java 
+// Create a List­of­CenteredCircle 
+List<CenteredCircle> shapes = new ArrayList<CenteredCircle>();
+// Create some centered shapes, and store them in the list 
+shapes.add(new CenteredCircle(1.0, 1.0, 1.0));
+// Next line will cause a compilation error 
+shapes.add(new CenteredSquare(2.5, 2, 3));
+```
+ 
+This syntax ensures that a large class of unsafe code is caught by the compiler, before it gets anywhere near runtime.
+
+### Generic Types and Type Parameters
+The syntax <T> has a special nameit’s called a type parameter, and another name for a generic type is a parameterized type. 
+> Type parameters always stand in for reference types. It is not possible to use a primitive type as a value for a type parameter.
