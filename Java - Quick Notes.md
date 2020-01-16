@@ -41,10 +41,16 @@ The only fields allowed in an interface definition are constants that are declar
 
 ### Problem Contextualisation
 ```java 
-List shapes = new ArrayList();   // Create a List to hold shapes // Create some centered shapes, and store them in the list shapes.add(new CenteredCircle(1.0, 1.0, 1.0));
-// This is legal Java­but is a very bad design choice shapes.add(new CenteredSquare(2.5, 2, 3));
-// List::get() returns Object, so to get back a // CenteredCircle we must cast CenteredCircle c = (CentredCircle)shapes.get(0);
-// Next line causes a runtime failure CenteredCircle c = (CentredCircle)shapes.get(1);
+List shapes = new ArrayList();   // Create a List to hold shapes 
+// Create some centered shapes, and store them in the list
+shapes.add(new CenteredCircle(1.0, 1.0, 1.0));
+// This is legal Java­but is a very bad design choice 
+shapes.add(new CenteredSquare(2.5, 2, 3));
+// List::get() returns Object, so to get back a 
+// CenteredCircle we must cast CenteredCircle 
+c = (CentredCircle)shapes.get(0);
+// Next line causes a runtime failure
+ CenteredCircle c = (CentredCircle)shapes.get(1);
 ```
 A problem with this code stems from the requirement to perform a cast to get the shape objects back out in a usable form—the List doesn’t know what type of objects it contains. Not only that, but it’s actually possible to put different types of objects into the same container—and everything will work fine until an illegal cast is used, and the program crashes.
 
