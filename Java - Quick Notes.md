@@ -59,16 +59,35 @@ A problem with this code stems from the requirement to perform a cast to get the
 To indicate that a type is a container that holds instances of another reference type, we enclose the payload type that the container holds within angle brackets
 
 ```java 
-// Create a List­of­CenteredCircle 
-List<CenteredCircle> shapes = new ArrayList<CenteredCircle>();
-// Create some centered shapes, and store them in the list 
-shapes.add(new CenteredCircle(1.0, 1.0, 1.0));
-// Next line will cause a compilation error 
-shapes.add(new CenteredSquare(2.5, 2, 3));
+//CreateaList­of­CenteredCircle 
+List<CenteredCircle>shapes=newArrayList<CenteredCircle>();
+//Createsomecenteredshapes,andstoretheminthelist 
+shapes.add(newCenteredCircle(1.0,1.0,1.0));
+//Nextlinewillcauseacompilationerror 
+shapes.add(newCenteredSquare(2.5,2,3));
 ```
  
-This syntax ensures that a large class of unsafe code is caught by the compiler, before it gets anywhere near runtime.
+Thissyntaxensuresthatalargeclassofunsafecodeiscaughtbythecompiler,beforeitgets anywherenearruntime.
 
 ### Generic Types and Type Parameters
-The syntax <T> has a special nameit’s called a type parameter, and another name for a generic type is a parameterized type. 
-> Type parameters always stand in for reference types. It is not possible to use a primitive type as a value for a type parameter.
+Thesyntax<T>hasaspecialnameit’scalledatypeparameter,andanothernamefora generictypeisaparameterizedtype.
+> Typeparametersalwaysstandinforreferencetypes.Itisnotpossibletousea primitivetypeasavalueforatypeparameter.
+> 
+### Type erasure
+* Todo after type we can get some problems related with overloaded generic methods. The raw type of them are exactly the same, so in the moment that the code will run the system don't know which of them use.
+
+
+### Bounded type parameters
+Use to impose restrictions in generic definitions. 
+#### Study case
+There is a generic definition of Box. This definition needs to ensure that only numbers will be holded by the abstraction. To achieve this use *bound* on the type parameter.
+
+
+```
+public class NumberBox<T extends Number> extends Box<T> {     public int intValue() {         return value.intValue();
+    } } 
+```
+The type bound T extends Number ensures that T can only be substituted with a type that is compatible with the type Number. **As a result of this, the compiler knows that value will definitely have a method intValue() available on it.**
+
+### Covariance
+### Wildcards
