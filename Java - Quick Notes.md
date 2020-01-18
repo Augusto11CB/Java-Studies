@@ -76,6 +76,8 @@ Thesyntax<T>hasaspecialnameit’scalledatypeparameter,andanothernamefora generic
 ### Type erasure
 * Todo after type we can get some problems related with overloaded generic methods. The raw type of them are exactly the same, so in the moment that the code will run the system don't know which of them use.
 
+The type erasure process can be imagined as a translation from generic Java source code back into regular Java code.
+
 
 ### Bounded type parameters
 Use to impose restrictions in generic definitions. 
@@ -91,3 +93,52 @@ The type bound T extends Number ensures that T can only be substituted with a ty
 
 ### Covariance
 ### Wildcards
+The question mark (?) is known as the wildcard in generic programming . It represents an unknown type.
+
+**Types of wildcards in Java:**
+**Upper Bounded Wildcards:** These wildcards can be used when there is the necessity to relax the restrictions on a variable. For example, to write a method that works on List < integer >, List < double >, and List < number > , is possible do this using an upper bounded wildcard.
+
+`public static void add(List<? extends Number> list)`
+
+**Lower Bounded Wildcards:** It is expressed using the wildcard character (‘?’), followed by the super keyword, followed by its lower bound: <? super A>. 
+
+`Collectiontype <? super A>`
+
+```java
+  public static void printOnlyIntegerClassorSuperClass(List<? super Integer> list) 
+    { 
+        System.out.println(list); 
+    } 
+```
+Here arguments can be Integer or superclass of Integer(which is Number). The method printOnlyIntegerClassorSuperClass will only take Integer or its superclass objects.
+
+**Unbounded Wildcard:** This wildcard type is specified using the wildcard character (?), for example, List. This is called a list of unknown type. These are useful in the following cases
+
+-   When writing a method which can be employed using functionality provided in Object class.
+-   When the code is using methods in the generic class that don’t depend on the type parameter
+- 
+
+if Cat extends Pet,
+then List<Cat> is a subtype of List<? extends Pet>, and so: 
+``` 
+List<Cat> cats = new ArrayList<Cat>();
+List<? extends Pet> pets = cats;
+```
+
+However, this differs from the array case, because type safety is maintained in the following way:
+
+```
+pets.add(new Cat()); // won't compile pets.add(new Pet()); // won't compile cats.add(new Cat());
+```
+
+**The compiler cannot prove that the storage pointed at by pets is capable of storing a Cat and so it rejects the call to add(). ** However, as cats definitely points at a list of Cat objects, then it must be acceptable to add a new one to the list.
+
+## Type parameters x Wildcard
+* A parameterized type, such as ArrayList<T>, is not instantiable; we cannot create instances of them. This is because <T> is just a type parameter—merely a placeholder for a genuine type.
+It is only when we provide a concrete value for the type parameter (e.g.,
+ArrayList<String>) that the type becomes fully formed and we can create objects of that type.
+
+
+[https://stackoverflow.com/questions/45086324/generics-using-wild-cards-vs-using-type-parameters-e/45086777](https://stackoverflow.com/questions/45086324/generics-using-wild-cards-vs-using-type-parameters-e/45086777)
+[https://stackoverflow.com/questions/3486689/java-bounded-wildcards-or-bounded-type-parameter](https://stackoverflow.com/questions/3486689/java-bounded-wildcards-or-bounded-type-parameter)
+[https://stackoverflow.com/questions/38944896/difference-between-bounded-type-parameter-t-extends-and-upper-bound-wildcard](https://stackoverflow.com/questions/38944896/difference-between-bounded-type-parameter-t-extends-and-upper-bound-wildcard)
