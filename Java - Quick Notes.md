@@ -133,7 +133,7 @@ pets.add(new Cat()); // won't compile pets.add(new Pet()); // won't compile ca
 
 **The compiler cannot prove that the storage pointed at by pets is capable of storing a Cat and so it rejects the call to add(). ** However, as cats definitely points at a list of Cat objects, then it must be acceptable to add a new one to the list.
 
-## Type parameters x Wildcard
+### Type parameters x Wildcard
 * A parameterized type, such as ArrayList<T>, is not instantiable; we cannot create instances of them. This is because <T> is just a type parameter—merely a placeholder for a genuine type.
 It is only when we provide a concrete value for the type parameter (e.g.,
 ArrayList<String>) that the type becomes fully formed and we can create objects of that type.
@@ -142,3 +142,13 @@ ArrayList<String>) that the type becomes fully formed and we can create objects 
 [https://stackoverflow.com/questions/45086324/generics-using-wild-cards-vs-using-type-parameters-e/45086777](https://stackoverflow.com/questions/45086324/generics-using-wild-cards-vs-using-type-parameters-e/45086777)
 [https://stackoverflow.com/questions/3486689/java-bounded-wildcards-or-bounded-type-parameter](https://stackoverflow.com/questions/3486689/java-bounded-wildcards-or-bounded-type-parameter)
 [https://stackoverflow.com/questions/38944896/difference-between-bounded-type-parameter-t-extends-and-upper-bound-wildcard](https://stackoverflow.com/questions/38944896/difference-between-bounded-type-parameter-t-extends-and-upper-bound-wildcard)
+
+## Lambda
+Lambda expressions represent the creation of an object of a specific type. The type of the instance that is created is known as the **target type** of the lambda.
+
+Target types are also called functional interfaces and they must:
+* Be interfaces  
+* Have only one nondefault method (but may have other methods that are default)
+
+### How Does Lambda work?
+When javac encounters a lambda expression, it interprets it as the body of a method with a specific signature—but which method?
