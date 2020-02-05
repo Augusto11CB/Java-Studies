@@ -85,9 +85,13 @@ Use to impose restrictions in generic definitions.
 There is a generic definition of Box. This definition needs to ensure that only numbers will be holded by the abstraction. To achieve this use *bound* on the type parameter.
 
 
-```
-public class NumberBox<T extends Number> extends Box<T> {     public int intValue() {         return value.intValue();
-    } } 
+```java
+public class NumberBox<T extends Number> extends Box<T> {   
+  
+	public int intValue() {         
+		return value.intValue();
+    } 
+} 
 ```
 The type bound T extends Number ensures that T can only be substituted with a type that is compatible with the type Number. **As a result of this, the compiler knows that value will definitely have a method intValue() available on it.**
 
@@ -118,9 +122,8 @@ Here arguments can be Integer or superclass of Integer(which is Number). The met
 -   When the code is using methods in the generic class that don’t depend on the type parameter
 - 
 
-if Cat extends Pet,
-then List<Cat> is a subtype of List<? extends Pet>, and so: 
-``` 
+if Cat extends Pet, then List<Cat> is a subtype of List<? extends Pet>, and so: 
+```java
 List<Cat> cats = new ArrayList<Cat>();
 List<? extends Pet> pets = cats;
 ```
@@ -128,7 +131,9 @@ List<? extends Pet> pets = cats;
 However, this differs from the array case, because type safety is maintained in the following way:
 
 ```
-pets.add(new Cat()); // won't compile pets.add(new Pet()); // won't compile cats.add(new Cat());
+pets.add(new Cat()); // won't compile
+pets.add(new Pet()); // won't compile 
+cats.add(new Cat());
 ```
 
 **The compiler cannot prove that the storage pointed at by pets is capable of storing a Cat and so it rejects the call to add(). ** However, as cats definitely points at a list of Cat objects, then it must be acceptable to add a new one to the list.
@@ -151,4 +156,10 @@ Target types are also called functional interfaces and they must:
 * Have only one nondefault method (but may have other methods that are default)
 
 ### How Does Lambda work?
-When javac encounters a lambda expression, it interprets it as the body of a method with a specific signature—but which method?
+When javac encounters a lambda expression, it interprets it as the body of a method with a specific signature
+
+Javac Looks at the lambda surrounding code:
+
+* The lambda must appear where an instance of an interface type is expected.
+* The expected interface type should have exactly one mandatory method.
+* The expected interface method should have a signature that exactly matches that of the lambda expression.
