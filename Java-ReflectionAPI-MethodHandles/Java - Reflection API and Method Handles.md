@@ -86,3 +86,43 @@ There are three methods to get the fields of a class:
 
 ### How to get the modifiers of a field, method or constructor ?
 ![getModifiersExample](resources/getModifiersExample.png)
+
+### How to set the value of a field ?
+```java
+Person o = ...;
+Class<?> clss = o.getClass();
+Field field = clss.getDeclaredField("name");
+```
+
+**If the given field is** *private* ** then an `IllegalAccessException` is thrown**
+
+However, there is a feature called `setAccessible(true)` that **suppresses** the access controll on that field. It **does not** make a prive field public 
+
+```java
+Person o = ...;
+Class<?> clss = o.getClass();
+Field field = clss.getDeclaredField("name");
+
+field.setAccessible(true);
+String name = (String)field.getValue(o);
+```
+
+## Creating an Object Metamodel Using Annotations and Reflection
+
+### Project - Designing an EntityManager for Reading and Writing to a Database
+The **EntityManager** interface models the writing and the reading of instances of **T** to any storage file or media, without knowing what is **T** at compile time.
+
+**Execution script**
+Give an instance of **T **
+1. read tje fields
+2. check for the annotations
+3. find the primary key
+4. find the fields to read/write	
+
+## Annotations
+
+### What time of the life cycle of a class an annotation will be made available; 
+**Stages of annotations availability - @Retention**
+1 - **Compile time:** only the compile will see the annotation 
+2 - **Class Loading time:** The annotation will only be seen by the class loader 
+3 - **Runtime:** take an annotation during runtime
