@@ -1,0 +1,40 @@
+public class Main {
+    public static void main(String[] args) {
+        String data = "000100102122640111111111111111111111111111111111111111262440525XDIJIJIASIJIAJSIJ654AQW875030BRBLABLA"; //62 44 [05100123456789] 5030BRBLABLA
+
+        System.out.println(getValue(data));
+    }
+
+
+    public static String getValue(String dataString) {
+        final String id62 = "62";
+
+        String value = "";
+
+        int startPointer = 0;
+
+        while (startPointer < dataString.length()) {
+
+            int endPointer = startPointer + 2;
+
+            if (id62.equals(dataString.substring(startPointer, endPointer))) {
+
+                int startPointerLengthId62SubId05 = endPointer + 4;
+                int endPointerLengthId62SubId00 = startPointerLengthId62SubId05 + 2;
+
+
+                int lengthValue = Integer.parseInt(dataString.substring(startPointerLengthId62SubId05, endPointerLengthId62SubId00));
+                value = dataString.substring(endPointerLengthId62SubId00, endPointerLengthId62SubId00 + lengthValue);
+                break;
+
+            } else {
+                int startPointerLength = endPointer;
+                int endPointerLength = startPointerLength + 2;
+
+                int lengthValue = Integer.parseInt(dataString.substring(startPointerLength, endPointerLength));
+                startPointer = endPointerLength + lengthValue;
+            }
+        }
+        return value;
+    }
+}
