@@ -94,9 +94,10 @@ Class<?> clss = o.getClass();
 Field field = clss.getDeclaredField("name");
 ```
 
+**What about private fields?**
 **If the given field is** *private* ** then an `IllegalAccessException` is thrown**
 
-However, there is a feature called `setAccessible(true)` that **suppresses** the access controll on that field. It **does not** make a prive field public 
+However, there is a feature called `setAccessible(true)` that **suppresses** the access controll on that field. It **does not** make a **prive** field **public** 
 
 ```java
 Person o = ...;
@@ -114,7 +115,7 @@ The **EntityManager** interface models the writing and the reading of instances 
 
 **Execution script**
 Give an instance of **T **
-1. read tje fields
+1. read the fields
 2. check for the annotations
 3. find the primary key
 4. find the fields to read/write	
@@ -123,6 +124,8 @@ Give an instance of **T **
 
 ### What time of the life cycle of a class an annotation will be made available; 
 **Stages of annotations availability - @Retention**
-1 - **Compile time:** only the compile will see the annotation 
-2 - **Class Loading time:** The annotation will only be seen by the class loader 
-3 - **Runtime:** take an annotation during runtime
+1 - [RetentionPolicy - SOURCE]**Compile time:** only the compile will see the annotation 
+2 - [RetentionPolicy - CLASS]**Class Loading time:** The annotation will only be seen by the **ClassLoader** 
+3 - [RetentionPolicy - RUNTIME] **Runtime:** take an annotation during runtime
+
+
