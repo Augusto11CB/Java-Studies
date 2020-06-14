@@ -13,6 +13,8 @@ repositories {
 
 dependencies {
 
+    implementation 'com.h2database:h2:1.4.200'
+
     compileOnly 'org.projectlombok:lombok:1.18.12'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
