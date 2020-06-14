@@ -6,16 +6,18 @@ import aug.bueno.annotation.PrimaryKey;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-public class Metamodel<T> {
+public class Metamodel {
 
-    private Class<T> clss;
+    private Class<?> clss;
 
-    public static <T> Metamodel of(Class<T> clss) {
-        return new Metamodel<>(clss);
+    public static Metamodel of(Class<?> clss) {
+        return new Metamodel(clss);
     }
 
-    public Metamodel(Class<T> clss) {
+    public Metamodel(Class<?> clss) {
         this.clss = clss;
     }
 
@@ -50,5 +52,35 @@ public class Metamodel<T> {
         }
 
         return columnFields;
+    }
+
+    /**
+     * Building the SQL Query to insert an object in the Database
+     *
+     * Ex: insert into ClassName (column1, column2) values (?, ?)
+     */
+    public String buildInsertRequest() {
+
+        final String columnElements = this.buildColumnElements();
+        final String questionMarkElements = this.buildQuestionMarkElements();
+
+        return "insert into " + this.clss.getName() + " (" + columnElements + ") values(" + questionMarkElements + ")";
+    }
+
+    private String buildColumnElements() {
+
+        String name = getPrimaryKey().getName();
+        List<String> columnNames = getColumns().stream().map(ColumnField::getName).collect(Collectors.toList());
+
+        columnNames.add(0, name);
+
+        return String.join(", ", columnNames);
+    }
+
+    private String buildQuestionMarkElements() {
+
+        int numberOfColumns = getColumns().size() + 1;
+
+        return IntStream.range(0, numberOfColumns).mapToObj(index -> "?").collect(Collectors.joining(","));
     }
 }
