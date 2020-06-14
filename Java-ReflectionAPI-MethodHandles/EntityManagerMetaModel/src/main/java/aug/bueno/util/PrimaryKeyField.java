@@ -11,6 +11,10 @@ public class PrimaryKeyField {
         this.field = field;
     }
 
+    public Field getField() {
+        return field;
+    }
+
     public String getName() {
         return field.getName();
     }
