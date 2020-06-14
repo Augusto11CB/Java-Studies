@@ -64,7 +64,7 @@ public class Metamodel {
         final String columnElements = this.buildColumnElements();
         final String questionMarkElements = this.buildQuestionMarkElements();
 
-        return "insert into " + this.clss.getName() + " (" + columnElements + ") values(" + questionMarkElements + ")";
+        return "insert into " + this.clss.getSimpleName() + " (" + columnElements + ") values(" + questionMarkElements + ")";
     }
 
     private String buildColumnElements() {

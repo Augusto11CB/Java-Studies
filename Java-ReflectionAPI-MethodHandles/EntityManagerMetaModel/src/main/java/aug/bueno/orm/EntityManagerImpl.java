@@ -30,7 +30,7 @@ public class EntityManagerImpl<T> implements EntityManager<T> {
 
     private PreparedStatementWrapper prepareStatementWith(String sql) throws SQLException {
 
-        Connection connection = DriverManager.getConnection("jdbc:h2:C:\\Users\\AsusAugusto\\Documents\\Java-Studies\\Java-ReflectionAPI-MethodHandles\\EntityManagerMetaModel\\database-files\\db-meta.mv.db");
+        Connection connection = DriverManager.getConnection("jdbc:h2:C:\\Users\\AsusAugusto\\Documents\\Java-Studies\\Java-ReflectionAPI-MethodHandles\\EntityManagerMetaModel\\database-files\\db-meta","admin","");
 
         PreparedStatement statement = connection.prepareStatement(sql);
 

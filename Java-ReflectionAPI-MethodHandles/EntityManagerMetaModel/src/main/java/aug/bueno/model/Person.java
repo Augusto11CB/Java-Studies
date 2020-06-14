@@ -2,7 +2,9 @@ package aug.bueno.model;
 
 import aug.bueno.annotation.Column;
 import aug.bueno.annotation.PrimaryKey;
+import lombok.ToString;
 
+@ToString
 public class Person {
 
     @PrimaryKey
