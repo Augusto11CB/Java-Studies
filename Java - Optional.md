@@ -17,7 +17,7 @@
 	Optional<Cart> cart = ...
 	[Avoid] Cart myCart = cart.get(); //if "cart"is empty then this code will throw a java.util.NoSuchElementException
 	
-### Unwrap Optionals
+#### Unwrap Optionals
 There Is No Need to Unwrap Optionals for Asserting Equality
 Having twoOptionalsin anassertEquals() doesn't require unwrapped values.
 
@@ -25,7 +25,7 @@ Having twoOptionalsin anassertEquals() doesn't require unwrapped values.
 	Optional<String> expectedItem = Optional.of("Shoes");        
 	assertEquals(expectedItem, actualItem);
 	
-* **Optional.orElse() and Optional.map()**
+#### Optional.orElse() and Optional.map()
 Using the **Optional.orElse()** method represents an elegant alternative to the **isPresent()** & **get()** pair for setting/returning a value.
  
 * **What Does Optional.orElse do?** 
@@ -64,16 +64,15 @@ If the value is present, then apply the function passed as argument in the value
 	**[AVOID]**
 	
 	```public void renderCustomer(Optional<Renderer> renderer, Optional<String> name) {}```
-	
-   	**[PREFER]**
-	
+   **[PREFER]**
 	```public void renderCustomer(Cart cart, Renderer renderer, String name) { String customerName = Objects.requireNonNullElseGet(name, () -> "anonymous"); }```
 	
 * **Avoid Optional <T> and Choose Non-Generic OptionalInt, OptionalLong, or OptionalDouble**
 	
+## Java 9: Executing fallbacks with Optional::or
+**TODO**  - [ref](https://adambien.blog/roller/abien/entry/java_9_executing_fallbacks_with)
 	
 ## References
-
-[Using Optional Correctly](https://dzone.com/articles/using-optional-correctly-is-not-optional)
+	[Using Optional Correctly](https://dzone.com/articles/using-optional-correctly-is-not-optional)
 	
-[Optional no Java 8 e no Java 9](https://medium.com/@racc.costa/optional-no-java-8-e-no-java-9-7c52c4b797f1)
+	[Optional no Java 8 e no Java 9](https://medium.com/@racc.costa/optional-no-java-8-e-no-java-9-7c52c4b797f1)

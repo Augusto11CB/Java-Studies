@@ -4,11 +4,13 @@
 
 
 ## Inherit private members
-A subclass does not inherit the private members of its parent class. However, if the superclass has public or protected methods for accessing its private fields, these can also be used by the subclass
+**A subclass does not inherit the private members of its parent class.** However, if the superclass has public or protected methods for accessing its private fields, these can also be used by the subclass
 
-Constructors are not inherited (instead, they are chained.
+Constructors are not inherited (instead, they are chained.)
 
 ## Abstract Methods and Classes
+> Abstract constructors will frequently be used to enforce class constraints or invariants such as the minimum fields required to setup the class.
+
 * Any class with an abstract method is automatically abstract itself and must be declared as such. To fail to do so is a compilation error.
 * An abstract class cannot be instantiated.
 * A subclass of an abstract class can be instantiated only if it overrides each of the abstract methods of its superclass and provides an implementation (i.e., a method body) for all of them. Such a class is often called a concrete subclass, to emphasize the fact that it is not abstract.
@@ -27,8 +29,46 @@ Constructors are not inherited (instead, they are chained.
   System.out.println(Shape::area)
  }
 ``` 
+
 When you do this, the method to be invoked is found using virtual dispatch, which we met earlier. 
 
+### Can an abstract class have a constructor?
+Yes, an abstract class can have a constructor.
+
+**constructor could be defined in an abstract class if one of these situations occur:**
+- Need to perform some initialization (to fields of the abstract class) before the instantiation of a subclass actually takes place
+ - There are defined final fields in the abstract class but you did not initialize them in the declaration itself; in this case, there must be a constructor to initialize these fields
+
+```java
+/**
+* The superclass `Product` is abstract and has a constructor. The concrete class `TimesTwo` has a  
+* constructor that just hardcodes the value 2. The concrete class `TimesWhat` has a constructor that  
+* allows the caller to specify the value.
+*/
+abstract class Product { 
+    int multiplyBy;
+    public Product( int multiplyBy ) {
+        this.multiplyBy = multiplyBy;
+    }
+
+    public int mutiply(int val) {
+       return multiplyBy * val;
+    }
+}
+
+class TimesTwo extends Product {
+    public TimesTwo() {
+        super(2);
+    }
+}
+
+class TimesWhat extends Product {
+    public TimesWhat(int what) {
+        super(what);
+    }
+}
+//NOTE: As there is no default (or no-arg) constructor in the parent abstract class, the constructor used in subclass must explicitly call the parent constructor.
+```
 ## Interfaces 
 
 ### Default Methods
@@ -67,7 +107,32 @@ shapes.add(newCenteredCircle(1.0,1.0,1.0));
 shapes.add(newCenteredSquare(2.5,2,3));
 ```
  
-Thissyntaxensuresthatalargeclassofunsafecodeiscaughtbythecompiler,beforeitgets anywherenearruntime.
+This syntax ensures that a large class of unsafe code is caught by the compiler, before it gets any where near run time.
+
+### raw type
+A raw type is a name for a generic interface or class without its type argument:
+
+```java
+List list = new ArrayList(); // raw type
+```
+Instead of:
+
+```java
+List<Integer> listIntgrs = new ArrayList<>(); // parameterized type
+```
+
+`List<Integer>` is a parameterized type of interface `List<E>` while `List` is a **raw type** of interface `List<E>`.
+
+```java
+ArrayList         rawList    = new ArrayList(); 
+ArrayList<String> stringList = new ArrayList<String>();
+rawList    = stringList;
+stringList = rawList;      // unchecked warning
+```
+
+The "unchecked" warning indicates that the compiler does not know whether the raw type ArrayList really contains strings.  A raw type ArrayList can in principle contain any type of object.
+
+Raw-types are ancient history of the Java language. In the beginning there were Collections and they held Objects nothing more and nothing less. Every operation on Collections required casts from Object to the desired type.
 
 ### Generic Types and Type Parameters
 Thesyntax<T>hasaspecialnameit’scalledatypeparameter,andanothernamefora generictypeisaparameterizedtype.
