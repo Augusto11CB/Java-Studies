@@ -17,7 +17,7 @@ public class Metamodel {
         return new Metamodel(clss);
     }
 
-    public Metamodel(Class<?> clss) {
+    private Metamodel(Class<?> clss) {
         this.clss = clss;
     }
 
@@ -54,9 +54,22 @@ public class Metamodel {
         return columnFields;
     }
 
+
+    /**
+     * Building the SQL Query to select an object in the Database given a PrimaryKey
+     * <p>
+     * Ex: select column1, column2 from ClassName where id = ?
+     */
+    public String buildSelectRequest() {
+        String columnElement = buildColumnElements();
+
+        return "select " + columnElement + " from " + this.clss.getSimpleName() +
+                "where " + getPrimaryKey().getName() + " = ?";
+    }
+
     /**
      * Building the SQL Query to insert an object in the Database
-     *
+     * <p>
      * Ex: insert into ClassName (column1, column2) values (?, ?)
      */
     public String buildInsertRequest() {
@@ -83,4 +96,5 @@ public class Metamodel {
 
         return IntStream.range(0, numberOfColumns).mapToObj(index -> "?").collect(Collectors.joining(","));
     }
+
 }
