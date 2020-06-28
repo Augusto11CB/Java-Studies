@@ -1,0 +1,32 @@
+buildscript {
+    ext {
+        artifactGroup = 'aug.bueno'
+        artifactVersion = '0.0.1-SNAPSHOT'
+
+
+        junitVersion = '5.6.2'
+
+    }
+}
+
+plugins {
+    id 'java'
+}
+
+group "${artifactGroup}"
+version "${artifactVersion}"
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    //Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+    testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
+}
