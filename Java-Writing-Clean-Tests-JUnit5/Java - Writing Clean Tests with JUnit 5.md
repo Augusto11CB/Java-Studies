@@ -70,7 +70,7 @@ The `@Test` marks methods that are to be run as tests.
 		assertEquals("Error with saving CandidatePreRegistre", exception.message)
 	}
 	```
-
+- assertArrayEquals
 - assert(Not)Null
 	```java
 	@Test  
@@ -86,11 +86,29 @@ The `@Test` marks methods that are to be run as tests.
 - assertIterableEquals: compares two collections 
 - assertThrows: explicitly verifies that when a certain code is called within a context an expection is thrown
 	```java
-	//todo
+	@Test
+	@DisplayName("Exception is thrown when invalid product ID")
+	void exceptionThrownWhenInvalidProducID() {
+		long productID = 0;
+		assertThrows(RuntimeException.class, () -> {
+			reward.setGiftProductID(productID);
+		});	
+	}
 	```
-- `assertAll`: 
+- assertAll: 
 	```java
-	//todo
+	@Test
+	@DisplayName("Reward applied with enough points")
+	void rewardApplied() {
+		RewardInformation info = reward.applyReward(buildSampleOrder(109), 200);
+		
+		assertAll("Reward info errors", 
+				() -> assertNotNull(info),
+				() -> assertEquals(2, info.getDiscount()),
+				() -> assertEquals(10, info.getPointsRedeemed())
+		);
+
+	}
 	```
 
 ### Running Groups of Tests
@@ -114,4 +132,67 @@ class DateTimeConverterShould {
 - Only non-static inner classes
 - @BeforeAll and @AfterAll do not work by default (Only with `Lifecycle.PER_CLASS`
 - There is no limit for the depth of the class hierarchy.
+
+#### Example of Nested Test Class
+``` java
+public class NestedTestSimpleExample {
+
+	@BeforeAll
+	static void setUpBeforeClass() throws Exception {
+		System.out.println("@BeforeAll - Outer Class");
+	}
+
+	@AfterAll
+	static void tearDownAfterClass() throws Exception {
+		System.out.println("@AfterAll - Outer Class");
+	}
+
+	@BeforeEach
+	void setUp() throws Exception {
+		System.out.println("@BeforeEach - Outer Class");
+	}
+
+	@AfterEach
+	void tearDown() throws Exception {
+		System.out.println("@AfterEach - Outer Class");
+	}
+	
+	@Test
+	void test() {
+		System.out.println("Outer Class Test");
+	}
+	
+	@Nested
+	class InnerClass {
+		@BeforeEach
+		void setUp() throws Exception {
+			System.out.println("@BeforeEach - Inner Class");
+		}
+
+		@AfterEach
+		void tearDown() throws Exception {
+			System.out.println("@AfterEach - Inner Class");
+		}
+		
+		@Test
+		void test() {
+			System.out.println("Inner Class Test");
+		}
+	}
+}
+```
+
+#### Nested Test Class  - Lifecycle method order
+```java
+@BeforeAll - Outer Class 
+@BeforeEach - Outer Class 
+- - Outer Class Test 
+@AfterEach - Outer Class 
+@BeforeEach - Outer Class 
+@BeforeEach - Inner Class 
+- - Inner Class Test 
+@AfterEach - Inner Class 
+@AfterEach - Outer Class 
+@AfterAll - Outer Class
+```
 
