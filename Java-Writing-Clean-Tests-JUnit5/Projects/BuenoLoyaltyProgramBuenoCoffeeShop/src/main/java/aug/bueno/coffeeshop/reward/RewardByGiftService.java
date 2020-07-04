@@ -12,8 +12,8 @@ public class RewardByGiftService extends RewardService {
     private long giftProductId;
 
     @Override
-    public RewardInformation applyReward(
-            List<Product> order, long customerPoints) {
+    public RewardInformation applyReward(List<Product> order, long customerPoints) {
+
         RewardInformation rewardInformation = new RewardInformation();
 
         if (customerPoints >= neededPoints) {

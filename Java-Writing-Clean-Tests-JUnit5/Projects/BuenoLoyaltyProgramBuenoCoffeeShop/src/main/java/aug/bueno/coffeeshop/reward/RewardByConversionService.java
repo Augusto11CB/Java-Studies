@@ -12,10 +12,15 @@ public class RewardByConversionService extends RewardService {
 
     @Override
     public RewardInformation applyReward(List<Product> order, long customerPoints) {
+
         RewardInformation rewardInformation = new RewardInformation();
 
         if (customerPoints >= neededPoints) {
-            rewardInformation = new RewardInformation(neededPoints, amount);
+
+            double orderTotal = calculateTotal(order);
+            if (orderTotal > amount) {
+                rewardInformation = new RewardInformation(neededPoints, amount);
+            }
         }
 
         return rewardInformation;
@@ -23,7 +28,7 @@ public class RewardByConversionService extends RewardService {
 
 
     public void setAmount(double amount) {
-        if(amount > 0) {
+        if (amount > 0) {
             this.amount = amount;
         } else {
             throw new IllegalArgumentException("Amount should be greater than zero");

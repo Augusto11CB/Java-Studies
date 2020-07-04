@@ -28,6 +28,8 @@ public class RewardByDiscountService extends RewardService {
     public void setPercentage(double percentage) {
         if (percentage > 0) {
             this.percentage = percentage;
+        } else {
+            throw new IllegalArgumentException("Percentage should be greater than zero");
         }
     }
 }
