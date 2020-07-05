@@ -1,4 +1,4 @@
-package aug.bueno.coffeeshop.reward;
+package aug.bueno.coffeeshop.reward.tests;
 
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,8 @@
-package aug.bueno.coffeeshop.reward;
+package aug.bueno.coffeeshop.reward.tests;
 
 import aug.bueno.coffeeshop.product.Product;
+import aug.bueno.coffeeshop.reward.RewardByGiftService;
+import aug.bueno.coffeeshop.reward.RewardInformation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DynamicContainer;
 import org.junit.jupiter.api.DynamicTest;
