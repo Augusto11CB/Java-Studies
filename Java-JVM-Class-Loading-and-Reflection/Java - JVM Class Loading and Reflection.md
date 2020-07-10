@@ -231,8 +231,16 @@ ClassLoader ucl =  new URLClassLoader(...);
 Class.forName("aug.bueno.Test",true, ucl); //(classname, ,classloader)
 ```
 
+```java
+// "location": "file:///../out/artifacts/implementations_jar/aug_implementations.jar"
+URL url = new URL(location);  
+URLClassLoader ucl = new URLClassLoader(new URL[]{url});  
+
+Class<ICameraFactory> cls = (Class<ICameraFactory>) Class.forName(configuration.getFactoryType(), true, ucl);
+```
+
 In the above code, the class is loaded by the classloader in the  3 parameter.
 
 
-## Hot Deployment
-Hot deployment is the re-deployment of changed classes. Differently from the **side by side deployment**, in hot deployment what makes a class to be reloaded is not the presence of other versions of this class in different locations, but an update of the running instance when some change is made. So hot deployment can stay up even though we change some classes instances.
+~~## Hot Deployment
+Hot deployment is the re-deployment of changed classes. Differently from the **side by side deployment**, in hot deployment what makes a class to be reloaded is not the presence of other versions of this class in different locations, but an update of the running instance when some change is made. So hot deployment can stay up even though we change some classes instances.~~
