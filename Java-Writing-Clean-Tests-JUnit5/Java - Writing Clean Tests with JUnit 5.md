@@ -52,10 +52,11 @@ Also, the annotated method must be  `static`.
 Both annotations are static methods, because in the scenario where a test class is using **per method fase**, these methods are called before the instantiation of the test class.
 
 
-### The Annotation @Test -
+### The Annotation @Test
 The `@Test` marks methods that are to be run as tests.
 
-### The Annotation @DisplayName - 
+### The Annotation @DisplayName
+TODO - Add description
 
 ### Assert methods
 
@@ -134,7 +135,7 @@ class DateTimeConverterShould {
 - There is no limit for the depth of the class hierarchy.
 
 #### Example of Nested Test Class
-``` java
+```java
 public class NestedTestSimpleExample {
 
 	@BeforeAll
@@ -250,17 +251,16 @@ Stream<DynamicTest> dynamicTestsFromStreamInJava8() {
                assertEquals(outputList.get(id), resolver.resolveDomain(dom));
 
          }));
-
 }
 ```
 
 ### Parameterized Tests 
-//TODO
+//TODO -  Add parameterized tests
 
-### Dynamic Tests vs Parameterized Tests
+#### Dynamic Tests vs Parameterized Tests
 Dynamic tests differ from the parameterized tests as they support full test lifecycle, while parametrized tests don't.
 
-### Argument Sources
+#### Argument Sources
 In Parameterized tests, arguments are provided by sources via annotations. 
 
 #### Argument  Sources - Rules
@@ -342,7 +342,6 @@ In Parameterized tests, arguments are provided by sources via annotations.
  When working with parameterized test, if the argument and the parameter types do not match, there is the possibility to create a custom converter that implements either `Argumentconverter` interface or `SimpleArgumentConverter`, and indicates which parameter will receive the converted input using `@ConvertWith{CustomConverter.class}`.
 
 **Example** - CustomConverter
-
 ```java
 public class ProductArgumentConverter extends SimpleArgumentConverter {  
   
@@ -365,7 +364,6 @@ public class ProductArgumentConverter extends SimpleArgumentConverter {
 ```
 
 **Example** - Using the custom converter to transform an argument to the right type of the parameter {@ConvertWith}
-
 ```java
 @ParameterizedTest  
 @ValueSource(strings = { "1; Small Decaf; 1.99", "2; Big Decaf; 2.49" })  
@@ -380,12 +378,133 @@ void discountShouldBeApplied(
 }
 ```
 
-### Extensin Points
+### Extension Points
 JUnit Jupiter extensions can declare interest in certain junctures of the test life cycle. When the JUnit Jupiter engine processes a test, it steps through these junctures and calls each registered extension.
 
 Each extension point corresponds to an interface and their methods take arguments that capture the context at that specific point in the test’s lifecycle.
 > Prefer extension points over features
 > \- JUnit design principles 
 
+#### Example - Setup(Before test) and cleaning(After Test) MongoDB Collection 
+**Context:** 
+- Loading data from JSON. 
+	-  Create a custom way to load different json files from each test run independently
+	- Implementation of an annotation that interacts with the MongoSpringExtesion that provides information about the test MongoDB  JSON file for this method as well as the collection name and type of objects stored in the test file.
+- Extract this setup and cleaning configuration from the test class
+	- Create an class that implements **Junit Extension Points** (BeforeEachCallback, AfterEachCallback)
 
-TODO
+**Annotation**
+```java
+public class MongoSpringCustomExtension implements BeforeEachCallback, AfterEachCallback {
+
+    /**
+     * Path to where our test JSON files are stored
+     */
+    private static Path JSON_PATH = Paths.get("src", "test", "resources", "data");
+
+    private final ObjectMapper mapper = new ObjectMapper();
+
+
+    /**
+     * Called before each test executes. This callback is reponsible for importing the JSON document,
+     * defined by the MongoDataFile annotation, into the embedded MongoDB, through the provided MongoTemplate.
+     *
+     * @param context The ExtensionContext which provides access to the test method
+     */
+    @Override
+    public void beforeEach(ExtensionContext context) throws Exception {
+        context.getTestMethod().ifPresent(method -> {
+
+            // Load test file from annotation
+            MongoDataFile mongoDataFile = method.getAnnotation(MongoDataFile.class);
+
+            // Load the MongoTemplate that can be used to import the data
+            getMongoTemplate(context).ifPresent(mongoTemplate -> {
+                try {
+                    List objects = mapper.readValue(
+                            JSON_PATH.resolve(mongoDataFile.value()).toFile(),
+                            mapper.getTypeFactory().constructCollectionType(List.class, mongoDataFile.classType())
+                    );
+
+                    //Load each review into MongoDB
+                    objects.forEach(mongoTemplate::save);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+        });
+    }
+
+    @Override
+    public void afterEach(ExtensionContext context) throws Exception {
+        context.getTestMethod().ifPresent(method -> {
+
+            // Load test file from annotation
+            MongoDataFile mongoDataFile = method.getAnnotation(MongoDataFile.class);
+
+            // Load the MongoTemplate that can be used to import the data
+            getMongoTemplate(context).ifPresent(mongoTemplate -> mongoTemplate.dropCollection(mongoDataFile.collectionName()));
+
+        });
+    }
+
+    /**
+     * Helper method that uses reflection to invoke the getMongoTemplate() method on the test instance
+     *
+     * @param context The ExtensionContext which provides access to the test method
+     */
+    private Optional<MongoTemplate> getMongoTemplate(ExtensionContext context) {
+
+        //get class -> get class's method -> get instance -> invoke the retrieved method in the retrieved instance
+
+        Optional<Class<?>> testClass = context.getTestClass();
+        if (testClass.isPresent()) {
+            // get class ->
+            Class<?> clazz = testClass.get();
+            try {
+                // get class's method
+                Method method = clazz.getMethod("getMongoTemplate", null);
+                // get instance ->
+                Optional<Object> testInstance = context.getTestInstance();
+                if (testInstance.isPresent()) {
+                    //  invoke the retrieved method in the retrieved instance
+                    return Optional.of((MongoTemplate) method.invoke(testInstance.get(), null));
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return Optional.empty();
+    }
+
+}
+```
+**Finally - TestClass**
+```java
+@DataMongoTest // -> Loads an embedded MongoDB instance
+@ExtendWith(MongoSpringCustomExtension.class)
+public class ReviewRepositoryTest {
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    public MongoTemplate getMongoTemplate() {
+        return mongoTemplate;
+    }
+
+    @Test
+    @MongoDataFile(value = "sample.json", classType = Review.class, collectionName = "Reviews")
+    void testFindAll() {
+        List<Review> reviews = reviewRepository.findAll();
+        assertEquals(2, reviews.size());
+    }
+}
+```
+
+**PS:** All these implementations is located in the project: [Review-Microservice](https://github.com/AugustoCalado/Bueno-Eletronics-Ecommerce/tree/master/Review-Microservice)
