@@ -129,3 +129,36 @@ verifyNoMoreInteractions(realObject); //For stubs
 ...
 ```
 
+## Testing Code that Deals with Time
+Context: If there is an code unit that handles something such as `LocalDate.now()`, test this unit would be hard, because it is impossible to set a default value for the return of `LocalDate.now()`, making it impossible to make assertions about the unit under test.
+
+### Solution - Java Clock Class
+- Pluggable abstraction of time which simplifies test
+
+```java
+public class AccountClosingService {
+	private Clock clock;
+	public AccountClosingService(Clock clock) {
+		this.clock = this.clock
+	}
+	public AccountClosingResponse closeAccount(Account account) {
+		Period accouldHolderAge = Period.between(account.getDob(), LocalDate.now(clock); // HERE! Passing the clock as the parameter of LocalDate.now()
+	}
+}
+```
+
+**Test Class**
+```java
+public class AccountClosingServiceTest {
+	private	Instant fixedTime = LocalDate.of(2019,7,4)
+	private Clock clock = Clock.fixed(fixedTime, ZoneId.systemDefault());
+	
+	private AccountClosingService underTest = new AccountClosingService(clock)
+	
+	@Test
+	public void test(){
+		final AccountClosingResponse response = ....;
+		assertEquals(LocalDateTime.ofInstant(fixedTime, ZoneOffset.systemDefaul()), response.getProcessingDate());
+	}
+}
+```
