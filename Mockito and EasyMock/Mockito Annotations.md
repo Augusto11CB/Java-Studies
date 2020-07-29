@@ -116,7 +116,7 @@ when(customService.obtainId(eq("FirstParameters"), anyString(), eq(20)).thenRetu
 ## Argument Captor
 An **argument caption** is just an special version of an **argument matcher**, which just captures argumets for futher inspection or assertion.
 
-// TODO Get example
+// TODO Get Example
 
 ## Iteractions Verification
 ### Verifying No More Interactions - `verifyNoMoreInteractions()`
@@ -129,12 +129,21 @@ verifyNoMoreInteractions(realObject); //For stubs
 ...
 ```
 
+## Selective Partial Mocks
+It is possible turn a mock into a spy by selectively enabling real methods
+
+```java
+SomeType mock = mock(SomeType.class)
+when(mock.someMethod).thenCallRealMethod();
+```
+
 ## Testing Code that Deals with Time
 Context: If there is an code unit that handles something such as `LocalDate.now()`, test this unit would be hard, because it is impossible to set a default value for the return of `LocalDate.now()`, making it impossible to make assertions about the unit under test.
 
 ### Solution - Java Clock Class
 - Pluggable abstraction of time which simplifies test
 
+**Service Class that Deals with Time**
 ```java
 public class AccountClosingService {
 	private Clock clock;
@@ -161,4 +170,39 @@ public class AccountClosingServiceTest {
 		assertEquals(LocalDateTime.ofInstant(fixedTime, ZoneOffset.systemDefaul()), response.getProcessingDate());
 	}
 }
+```
+
+## BDDMockito
+-   _given_  some preconditions (Arrange)
+-   _when_  an action occurs (Act)
+-   _then_  verify the output (Assert)
+
+`import static org.mockito.BDDMockito.*;`
+
+### Mockito --> BDDMockito
+
+when/thenReturn --> given/willReturn
+verify(object).someMethod --> then(object).should().someMethod();
+
+**Mockito**
+```java
+when(phoneBookRepository.contains(momContactName))
+  .thenReturn(false);
+ 
+phoneBookService.register(momContactName, momPhoneNumber);
+ 
+verify(phoneBookRepository)
+  .insert(momContactName, momPhoneNumber);
+```
+
+**BDD Mockito**
+```java
+given(phoneBookRepository.contains(momContactName))
+  .willReturn(false);
+ 
+phoneBookService.register(momContactName, momPhoneNumber);
+ 
+then(phoneBookRepository)
+  .should()
+  .insert(momContactName, momPhoneNumber);
 ```
