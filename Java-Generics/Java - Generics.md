@@ -1,4 +1,23 @@
 
+## Passing a Parameter to a Generic Type
+```java
+public class ReverseComparator<T> implements Comparator<T> {
+	private final Comparator<T> delegateComparator;
+
+	public ReverseComparator(final Comparator<T> delegateComparator) {
+		this.delegateComparator = delegateComparator;
+	}
+	
+	public int compare(final T left, final T right) {
+		return -1 * delegateComparator.compare(left, right);
+	}
+}
+```
+What this sintaxe is saying is: There is a `ReverseComparator` class that is generic (it got the generic type parameter **T**), and implements a generic interface `Comparator` that receives the same generic parameter (**T**), from ReverseComparator.
+
+> Here we are passing on this **T** up the chain
+
+
 ## [Java Generics WildCard: <? extends Number> vs <T extends Number>](https://stackoverflow.com/questions/11497020/java-generics-wildcard-extends-number-vs-t-extends-number)
 `T` is a bounded type, i.e. whatever type you use, you have to stick to that particular type which extends `Number`, e.g. if you pass a `Double` type to a list, you cannot pass it a `Short` type as `T` is of type `Double` and the list is already bounded by that type. In contrast, if you use `?` (`wildcard`), you can use "any" type that extends `Number` (add both `Short` and `Double` to that list).
 
