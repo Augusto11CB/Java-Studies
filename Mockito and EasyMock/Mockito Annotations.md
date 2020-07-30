@@ -116,7 +116,20 @@ when(customService.obtainId(eq("FirstParameters"), anyString(), eq(20)).thenRetu
 ## Argument Captor
 An **argument caption** is just an special version of an **argument matcher**, which just captures argumets for futher inspection or assertion.
 
-// TODO Get Example
+```java
+@Test
+void test(){
+	underTestService.generate();
+
+	ArgumentCaptior<MyCustomObj> customCaptor = ArgumentCaptor.forClass(MyCustomObj.class);
+	
+	verify(customRepository).save(customCaptor.capture())
+	MyCustomObj custom = customCaptor.getValue()
+
+	//asserts
+
+}
+```
 
 ## Iteractions Verification
 ### Verifying No More Interactions - `verifyNoMoreInteractions()`
