@@ -119,13 +119,17 @@ An **argument caption** is just an special version of an **argument matcher**, w
 ```java
 @Test
 void test(){
-	underTestService.generate();
 
 	ArgumentCaptior<MyCustomObj> customCaptor = ArgumentCaptor.forClass(MyCustomObj.class);
-	
-	verify(customRepository).save(customCaptor.capture())
-	MyCustomObj custom = customCaptor.getValue()
+	ArgumentCaptior<UrlCustom> urlCaptor= ArgumentCaptor.forClass(UrlCustom.class);
 
+	when(restClient.get(any(), urlCaptor.captor())).thenReturn(null);
+	underTestService.generate();
+
+	verify(customRepository).save(customCaptor.capture());
+	
+	MyCustomObj custom = customCaptor.getValue();
+	UrlCustom url = urlCaptor.getValue();
 	//asserts
 
 }
