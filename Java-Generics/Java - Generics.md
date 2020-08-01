@@ -94,7 +94,6 @@ List<? extends Number> listExtendsNumber_ListDouble  = new ArrayList<Double>();
 //listExtendsNumber_ListInteger.add(3);    // error - can't add Integer to *possible* List<Double>, even though it is really List<Integer>
 //listExtendsNumber_ListDouble.add(3);     // error - can't add Integer to *possible* List<Double>, especially since it is really List<Double>
 
-
 ```
 
 
@@ -318,3 +317,14 @@ This is both permissive about what we can pass to it, as well as permissive abou
 
 ## References
 [Generic Types (The Java™ Tutorials > Learning the Java Language > Generics (Updated))](https://docs.oracle.com/javase/tutorial/java/generics/types.html)
+
+[How can I add to List<? extends Number> data structures?](https://stackoverflow.com/questions/2776975/how-can-i-add-to-list-extends-number-data-structures)
+[Java Generics for Upper bound & lower bound wild cards](https://stackoverflow.com/questions/16189229/java-generics-for-upper-bound-lower-bound-wild-cards)
+
+[Docs Oracle - Upper Bounded Wildcards](https://docs.oracle.com/javase/tutorial/java/generics/upperBounded.html)
+[Docs Oracle - Lower Bounded Wildcards](https://docs.oracle.com/javase/tutorial/java/generics/lowerBounded.html)
+
+[What is PECS (Producer Extends Consumer Super)?](https://stackoverflow.com/questions/2723397/what-is-pecs-producer-extends-consumer-super)
+
+[Detailed description of upper bound and lower bound wildcards on Java generics](https://developpaper.com/detailed-description-of-upper-bound-and-lower-bound-wildcards-on-java-generics/)
+[How to choose Upper & Lower bounds in Java Generics?](https://medium.com/javarevisited/how-to-choose-upper-lower-bounds-in-java-generics-52bfdcfd17c2#:~:text=Upper%20bound%20wildcard%20%E2%88%92%20If%20a,then%20use%20an%20unbound%20wildcard.)
