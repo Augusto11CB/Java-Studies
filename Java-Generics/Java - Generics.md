@@ -17,6 +17,89 @@ What this sintaxe is saying is: There is a `ReverseComparator` class that is gen
 
 > Here we are passing on this **T** up the chain
 
+## WildCards 
+
+### PECS (Producer Extends Consumer Super)
+> "PECS" is from the collection's point of view. If you are only pulling items from a generic collection, it is a producer and you should use extends; if you are only stuffing items in, it is a consumer and you should use super. If you do both with the same collection, you shouldn't use either extends or super.
+> \- [StackOverflow](https://stackoverflow.com/questions/2723397/what-is-pecs-producer-extends-consumer-super)
+
+Suppose you have a method that takes as its parameter a collection of things, but you want it to be more flexible than just accepting a `Collection<Thing>`.
+
+**Case 1[Producer][Read From][Upper bound]:** You want to go through the collection and do things with each item.
+Then the list is a producer, so you should use a Collection<? extends Thing>.
+
+The reasoning is that a `Collection<? extends Thing>` could hold any subtype of `Thing`, and thus each element will behave as a `Thing` when you perform your operation. (You actually cannot add anything to a `Collection<? extends Thing>`, because you cannot know at runtime which specific subtype of `Thing` the collection holds.)
+
+**Case 2[Lower bound]: You want to add things to the collection.**  
+Then the list is a  **consumer**, so you should use a  `Collection<? super Thing>`.
+
+The reasoning here is that unlike  `Collection<? extends Thing>`,  `Collection<? super Thing>`  can always hold a  `Thing`  no matter what the actual parameterized type is. Here you don't care what is already in the list as long as it will allow a  `Thing`  to be added; this is what  `? super Thing`  guarantees.
+
+### Lower Bound
+Say you want to write a method that puts  Integer  objects into a list. To maximize flexibility, you would like the method to work on  List<Integer>,  List<Number>, and  List<Object>  — anything that can hold  Integer  values.
+
+To write the method that works on lists of  Integer  and the supertypes of  Integer, such as  Integer,  Number, and  Object, you would specify  List<? super Integer>. The term  List<Integer>  is more restrictive than  List<? super Integer>  because the former matches a list of type  Integer  only, whereas the latter matches a list of any type that is a supertype of  Integer.
+
+The following code adds the numbers 1 through 10 to the end of a list:
+
+```java
+public static void addNumbers(List<? super Integer> list) {
+    for (int i = 1; i <= 10; i++) {
+        list.add(i);
+    }
+}
+```
+
+You can't read the specific type T (e.g.  `Number`) from  `List<? super T>`  because you can't guarantee what kind of  `List`  it is really pointing to. The only "guarantee" you have is you are able to add a value of type  `T`  (or any superclass of  `T`) without violating the integrity of the list being pointed to.
+
+```java
+ List<? super Integer> listSuperInteger_ListNumber  = new ArrayList<Number>();
+ List<? super Integer> listSuperInteger_ListInteger = new ArrayList<Integer>();
+//List<? super Integer> listSuperInteger_ListDouble  = new ArrayList<Double>();     // error - Double is not a superclass of Integer
+
+listSuperNumber_ListNumber.add(3);       // ok - allowed to add Integer to List<Number> or List<Object>
+```
+
+### Upper Bound
+You can use an upper bounded wildcard to relax the restrictions on a variable. For example, say you want to write a method that works on `List<Integer>`, `List<Double>`, and  `List<Number>`; you can achieve this by using an upper bounded wildcard.
+
+To write the method that works on lists of Number and the subtypes of Number, such as Integer, Double, and Float, you would specify `List<? extends Number>`. The term `List<Number>` is more restrictive than `List<? extends Number>` because the former matches a list of type Number only, whereas the latter matches a list of type Number or any of its subclasses.
+
+The  sumOfList  method returns the sum of the numbers in a list:
+```java
+public static double sumOfList(List<? extends Number> list) {
+    double s = 0.0;
+    for (Number n : list)
+        s += n.doubleValue();
+    return s;
+}
+```
+
+You can't add any object to  `List<? extends T>`  because you can't guarantee what kind of  `List`  it is really pointing to, so you can't guarantee that the object is allowed in that  `List`. The only "guarantee" is that you can only read from it and you'll get a  `T`  or subclass of  `T`.
+
+```java
+//List<? extends Integer> listExtendsInteger_ListNumber  = new ArrayList<Number>(); // error - Number is not a subclass of Integer
+List<? extends Integer> listExtendsInteger_ListInteger = new ArrayList<Integer>();
+//List<? extends Integer> listExtendsInteger_ListDouble  = new ArrayList<Double>(); // error - Double is not a subclass of Integer
+
+// More examples below
+
+List<? extends Number> listExtendsNumber_ListNumber  = new ArrayList<Number>();
+List<? extends Number> listExtendsNumber_ListInteger = new ArrayList<Integer>();
+List<? extends Number> listExtendsNumber_ListDouble  = new ArrayList<Double>();
+
+//listExtendsNumber_ListNumber.add(3);     // error - can't add Integer to *possible* List<Double>, even though it is really List<Number>
+//listExtendsNumber_ListInteger.add(3);    // error - can't add Integer to *possible* List<Double>, even though it is really List<Integer>
+//listExtendsNumber_ListDouble.add(3);     // error - can't add Integer to *possible* List<Double>, especially since it is really List<Double>
+
+
+```
+
+
+### Example - `Collections.copy()`
+```java
+public static <T> void copy(List<? super T> dest,List<? extends T> src)
+```
 
 ## [Java Generics WildCard: <? extends Number> vs <T extends Number>](https://stackoverflow.com/questions/11497020/java-generics-wildcard-extends-number-vs-t-extends-number)
 `T` is a bounded type, i.e. whatever type you use, you have to stick to that particular type which extends `Number`, e.g. if you pass a `Double` type to a list, you cannot pass it a `Short` type as `T` is of type `Double` and the list is already bounded by that type. In contrast, if you use `?` (`wildcard`), you can use "any" type that extends `Number` (add both `Short` and `Double` to that list).
