@@ -38,7 +38,7 @@ The reasoning here is that unlike  `Collection<? extends Thing>`,  `Collection<?
 ### Lower Bound
 Say you want to write a method that puts  Integer  objects into a list. To maximize flexibility, you would like the method to work on  List<Integer>,  List<Number>, and  List<Object>  — anything that can hold  Integer  values.
 
-To write the method that works on lists of  Integer  and the supertypes of  Integer, such as  Integer,  Number, and  Object, you would specify  List<? super Integer>. The term  List<Integer>  is more restrictive than  List<? super Integer>  because the former matches a list of type  Integer  only, whereas the latter matches a list of any type that is a supertype of  Integer.
+To write the method that works on lists of  `Integer`  and the supertypes of  `Integer`, such as  `Integer`,  `Number`, and  `Object`, you would specify  `List<? super Integer>`. The term  `List<Integer>`  is more restrictive than  `List<? super Integer>`  because the former matches a list of type  `Integer`  only, whereas the latter matches a list of any type that is a supertype of  `Integer`.
 
 The following code adds the numbers 1 through 10 to the end of a list:
 
@@ -52,6 +52,7 @@ public static void addNumbers(List<? super Integer> list) {
 
 You can't read the specific type T (e.g.  `Number`) from  `List<? super T>`  because you can't guarantee what kind of  `List`  it is really pointing to. The only "guarantee" you have is you are able to add a value of type  `T`  (or any superclass of  `T`) without violating the integrity of the list being pointed to.
 
+**Example**
 ```java
  List<? super Integer> listSuperInteger_ListNumber  = new ArrayList<Number>();
  List<? super Integer> listSuperInteger_ListInteger = new ArrayList<Integer>();
@@ -63,9 +64,9 @@ listSuperNumber_ListNumber.add(3);       // ok - allowed to add Integer to List<
 ### Upper Bound
 You can use an upper bounded wildcard to relax the restrictions on a variable. For example, say you want to write a method that works on `List<Integer>`, `List<Double>`, and  `List<Number>`; you can achieve this by using an upper bounded wildcard.
 
-To write the method that works on lists of Number and the subtypes of Number, such as Integer, Double, and Float, you would specify `List<? extends Number>`. The term `List<Number>` is more restrictive than `List<? extends Number>` because the former matches a list of type Number only, whereas the latter matches a list of type Number or any of its subclasses.
+To write the method that works on lists of `Number` and the subtypes of `Number`, such as `Integer`, `Double`, and `Float`, you would specify `List<? extends Number>`. The term `List<Number>` is more restrictive than `List<? extends Number>` because the former matches a list of type `Number` only, whereas the latter matches a list of type `Number` or any of its subclasses.
 
-The  sumOfList  method returns the sum of the numbers in a list:
+The  `sumOfList`  method returns the sum of the numbers in a list:
 ```java
 public static double sumOfList(List<? extends Number> list) {
     double s = 0.0;
@@ -77,6 +78,7 @@ public static double sumOfList(List<? extends Number> list) {
 
 You can't add any object to  `List<? extends T>`  because you can't guarantee what kind of  `List`  it is really pointing to, so you can't guarantee that the object is allowed in that  `List`. The only "guarantee" is that you can only read from it and you'll get a  `T`  or subclass of  `T`.
 
+**Example**
 ```java
 //List<? extends Integer> listExtendsInteger_ListNumber  = new ArrayList<Number>(); // error - Number is not a subclass of Integer
 List<? extends Integer> listExtendsInteger_ListInteger = new ArrayList<Integer>();
