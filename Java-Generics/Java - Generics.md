@@ -362,6 +362,31 @@ Not every generic type can be reflected, only types that can be reified can be r
 	// output: true
 ```
 
+### Non-Reifiable Types
+As generic information is erased at runtime, the types that have generic information are non-reifiable, so they aren't carrying enough information to be uniquely be identified at runtime.
+
+- type varuables
+- parameterized type with parameters
+	- Ex: `ArrayList<String>`
+- parameterized type with bounds
+	- Ex: `List<? extends Number>`
+
+```java
+	
+	List<Integer> integers = new ArrayList<>();
+	System.out.println(integers.getClass())
+	// output: class java.util.ArrayList
+	
+	List<Strings> strings = new ArrayList<>();
+	System.out.println(strings.getClass())
+	// output: class java.util.ArrayList
+
+	// They are the same class!!!!!!!!
+	
+	System.out.println(strings.getClass() == integers.getClass() )
+	// output: true
+```
+
 ## References
 [Generic Types (The Java™ Tutorials > Learning the Java Language > Generics (Updated))](https://docs.oracle.com/javase/tutorial/java/generics/types.html)
 
