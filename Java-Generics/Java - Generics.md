@@ -1,4 +1,7 @@
 
+## Covariance and Contravariance
+[Ref](https://dzone.com/articles/covariance-and-contravariance#:~:text=Arrays%20are%20said%20to%20be,or%20any%20subtype%20of%20T%20.)
+
 ## Passing a Parameter to a Generic Type
 ```java
 public class ReverseComparator<T> implements Comparator<T> {
@@ -101,6 +104,12 @@ List<? extends Number> listExtendsNumber_ListDouble  = new ArrayList<Double>();
 ```java
 public static <T> void copy(List<? super T> dest,List<? extends T> src)
 ```
+
+### Unbounded Wildcards
+[Ref](https://docs.oracle.com/javase/tutorial/java/generics/unboundedWildcards.html)
+
+### Wildcards and Subtyping
+[Ref](https://docs.oracle.com/javase/tutorial/java/generics/subtyping.html)
 
 ## [Java Generics WildCard: <? extends Number> vs <T extends Number>](https://stackoverflow.com/questions/11497020/java-generics-wildcard-extends-number-vs-t-extends-number)
 `T` is a bounded type, i.e. whatever type you use, you have to stick to that particular type which extends `Number`, e.g. if you pass a `Double` type to a list, you cannot pass it a `Short` type as `T` is of type `Double` and the list is already bounded by that type. In contrast, if you use `?` (`wildcard`), you can use "any" type that extends `Number` (add both `Short` and `Double` to that list).
@@ -314,6 +323,44 @@ static <K, E, L extends List<E>> void(Map<K, L> m) {
 
 This is both permissive about what we can pass to it, as well as permissive about how we can manipulate  `m`  and everything in it.
 
+## Rawtypes
+
+## Erasure - How Generics  Get Implemented?
+
+## Reflectiong Reified Types
+Not every generic type can be reflected, only types that can be reified can be reflected.
+
+**What does reified mean?** Be materializeble (to make something real).
+
+### Reifiable Types
+- primitives
+	- `int`, `long`
+- non parameterized Class or Interface 
+	- Ex: `String` 
+- all type arguments are unbounded Wildcards
+	- Ex: `List<?>`
+- raw types
+	- Ex: `List`, `Map`
+- arrays of reifiable components
+	- Ex: `int [][]`, `List<?>[]`
+
+```java
+	System.out.println(int.class)
+	// output: int
+	System.out.println(String.class)
+	// output: class java.lang.String
+	
+	List<?> wildcards = new ArrayList<>();
+	System.out.println(wildcards.getClass())
+	// output: class java.util.ArrayList
+
+	List raw = new ArrayList();
+	System.out.println(raw.getClass())
+	// output: class java.util.ArrayList
+
+	System.out.println(raw.getClass() == wildcards.getClass())
+	// output: true
+```
 
 ## References
 [Generic Types (The Java™ Tutorials > Learning the Java Language > Generics (Updated))](https://docs.oracle.com/javase/tutorial/java/generics/types.html)
