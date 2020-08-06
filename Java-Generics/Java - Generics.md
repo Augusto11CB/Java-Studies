@@ -387,6 +387,9 @@ As generic information is erased at runtime, the types that have generic informa
 	// output: true
 ```
 
+## Intersection Types `<T extends A & B>`
+[ref](http://iteratrlearning.com/java/generics/2016/05/12/intersection-types-java-generics.html#:~:text=Intersection%20types%20are%20a%20form,keyword%20is%20used%20in%20generics.)
+
 ## References
 [Generic Types (The Java™ Tutorials > Learning the Java Language > Generics (Updated))](https://docs.oracle.com/javase/tutorial/java/generics/types.html)
 
