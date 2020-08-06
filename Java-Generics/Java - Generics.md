@@ -23,18 +23,18 @@ What this sintaxe is saying is: There is a `ReverseComparator` class that is gen
 ## WildCards 
 
 ### PECS (Producer Extends Consumer Super)
-> "PECS" is from the collection's point of view. If you are only pulling items from a generic collection, it is a producer and you should use extends; if you are only stuffing items in, it is a consumer and you should use super. If you do both with the same collection, you shouldn't use either extends or super.
+> **"PECS" is from the collection's point of view**. If you are only pulling items from a generic collection, it is a producer and you should use **extends**; if you are only pushing items in, it is a consumer and you should use **super**. If you do both with the same collection, you shouldn't use either extends or super.
 > \- [StackOverflow](https://stackoverflow.com/questions/2723397/what-is-pecs-producer-extends-consumer-super)
 
 Suppose you have a method that takes as its parameter a collection of things, but you want it to be more flexible than just accepting a `Collection<Thing>`.
 
 **Case 1[Producer][Read From][Upper bound]:** You want to go through the collection and do things with each item.
-Then the list is a producer, so you should use a Collection<? extends Thing>.
+**Then the list is a producer**, so you should use a Collection<? extends Thing>.
 
 The reasoning is that a `Collection<? extends Thing>` could hold any subtype of `Thing`, and thus each element will behave as a `Thing` when you perform your operation. (You actually cannot add anything to a `Collection<? extends Thing>`, because you cannot know at runtime which specific subtype of `Thing` the collection holds.)
 
 **Case 2[Lower bound]: You want to add things to the collection.**  
-Then the list is a  **consumer**, so you should use a  `Collection<? super Thing>`.
+**Then the list is a  consumer,** so you should use a  `Collection<? super Thing>`.
 
 The reasoning here is that unlike  `Collection<? extends Thing>`,  `Collection<? super Thing>`  can always hold a  `Thing`  no matter what the actual parameterized type is. Here you don't care what is already in the list as long as it will allow a  `Thing`  to be added; this is what  `? super Thing`  guarantees.
 
@@ -111,9 +111,34 @@ public static <T> void copy(List<? super T> dest,List<? extends T> src)
 ### Wildcards and Subtyping
 [Ref](https://docs.oracle.com/javase/tutorial/java/generics/subtyping.html)
 
-## [Java Generics WildCard: <? extends Number> vs <T extends Number>](https://stackoverflow.com/questions/11497020/java-generics-wildcard-extends-number-vs-t-extends-number)
+### Do not use wildcard types as return types
+> Rather than providing additional flexibility for your users, it would force them to use wildcard types in client code. Properly used, wildcard types are nearly invisible to users of a class. They cause methods to accept the parameters they should accept and reject those they should reject. If the user of the class has to think about wildcard types, there is probably something wrong with the class's API.
+> \- Effective Java 2nd Edition, Item 28: Use bounded wildcards to increase API flexibility
+
+## [Java Generics WildCard: `<? extends Number>` vs `<T extends Number>`](https://stackoverflow.com/questions/11497020/java-generics-wildcard-extends-number-vs-t-extends-number)
 `T` is a bounded type, i.e. whatever type you use, you have to stick to that particular type which extends `Number`, e.g. if you pass a `Double` type to a list, you cannot pass it a `Short` type as `T` is of type `Double` and the list is already bounded by that type. In contrast, if you use `?` (`wildcard`), you can use "any" type that extends `Number` (add both `Short` and `Double` to that list).
 
+> A wildcard can have only one bound, while a type parameter can have several bounds. A wildcard can have a lower or an upper bound, while there is no such thing as a lower bound for a type parameter.
+> \- Angelika Langer's Java Generics FAQs
+
+```java
+type parameter bound     T extends Class & Interface1 & … & InterfaceN
+
+  wildcard bound  
+      upper bound          ? extends SuperType
+      lower bound          ? super   SubType
+```
+
+### [Example](https://stackoverflow.com/questions/3486689/java-bounded-wildcards-or-bounded-type-parameter) 
+```java
+public <T extends Shape> void addIfPretty(List<T> shapes, T shape) {
+    if (shape.isPretty()) {
+       shapes.add(shape);
+    }
+}
+```
+
+Here there are  `List<T> shapes`  and a  `T shape`, therefore we can safely  `shapes.add(shape)`. If it was declared  `List<? extends Shape>`, you can  _NOT_  safely  `add`  to it (because you may have a  `List<Square>`  and a  `Circle`).
 
 ## [Is there a generic class that accepts either of two types?](https://stackoverflow.com/questions/9141960/generic-class-that-accepts-either-of-two-types)
 The answer is no. At least there is no way to do it using generic types. I would recommend a combination of generics and factory methods to do what you want.
@@ -144,7 +169,7 @@ class MyGenericClass<T extends Number> {
 
 Fundamentally,  `List<List<?>>`  and  `List<? extends List<?>>`  have distinct type arguments.
 
-It's actually the case that one is a subtype of the other, but first let's learn more about what they mean individually.
+It's actually the case that one is a subtype of the other.
 
 ### Understanding semantic differences
 
@@ -166,7 +191,7 @@ For the moment, let's simplify the example by using  `List`  instead of  `Map`.
     typeInfoLost.add( new Integer(1) );
     ```
     
-    We can put any  `List`  in  `theAnyList`, but by doing so we have lost knowledge of  _their elements_.
+We can put any  `List`  in  `theAnyList`, but by doing so we have lost knowledge of  _their elements_.
     
 -   When we use  `? extends`, the  `List`  holds  _some specific subtype of List, but we don't know what it is anymore_. So i.e.:
     
@@ -183,7 +208,8 @@ For the moment, let's simplify the example by using  `List`  instead of  `Map`.
     theNotSureList.add( new LinkedList<Float>() );
     ```
     
-    It's no longer safe to add anything to the  `theNotSureList`, because we don't know the actual type of its elements. (_Was_  it originally a  `List<LinkedList<Float>>`? Or a  `List<Vector<Float>>`? We don't know.)
+It's no longer safe to add anything to the  `theNotSureList`, because we don't know the actual type of its elements. 
+> (_Was_  it originally a  `List<LinkedList<Float>>`? Or a  `List<Vector<Float>>`? We don't know.)
     
 -   We can put these together and have a  `List<? extends List<?>>`. We don't know what type of  `List`  it has in it anymore, and we don't know the element type of  _those_  `List`s either. So i.e.:
     
@@ -200,9 +226,8 @@ For the moment, let's simplify the example by using  `List`  instead of  `Map`.
     theReallyNotSureList.get(0).add( "a String" );
     ```
     
-    We've lost information  _both_  about  `theReallyNotSureList`,  _as well as_  the element type of the  `List`s inside it.
-    
-    (But you may note that we can  _assign_  any kind of  _List holding Lists_  to it...)
+We've lost information  _both_  about  `theReallyNotSureList`,  _as well as_  the element type of the  `List`s inside it. 
+> (But you may note that we can  _assign_  any kind of  _List holding Lists_  to it...)
     
 
 So to break it down:
@@ -310,7 +335,7 @@ We would be able to call it with something like a  `Map<Integer, ArrayList<Strin
 
 We can also use bounds to nest type parameters:
 
-```
+``` java
 static <K, E, L extends List<E>> void(Map<K, L> m) {
     for(K key : m.keySet()) {
         L list = m.get(key);
