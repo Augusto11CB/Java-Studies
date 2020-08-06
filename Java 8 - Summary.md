@@ -4,6 +4,7 @@
 * [10 Examples of Optional in Java 8](https://javarevisited.blogspot.com/2017/04/10-examples-of-optional-in-java-8.html#axzz4pXFCC65F)
 * [How Join Multiple String into One in Java 8](https://www.java67.com/2016/08/java-8-stringjoin-example.html)
 * Dates in Java 8
+* [java-merge-maps](https://www.baeldung.com/java-merge-maps)
 
 ## Lambdas
 Lambda expressions basically express instances of [functional interfaces](#functional-interfaces). So that, lambda expressions just implement abstract function and therefore implement functional interfaces.
@@ -72,6 +73,12 @@ private int doVerification(Function<A,B> fn){
 	//CODE ABC
 }
 ```
+
+### What is meant by lambda *target type* and *target type context* in Java?
+> lambdas expression infer their type from their target context
+
+[ref](https://stackoverflow.com/questions/55205665/what-is-meant-by-lambda-target-type-and-target-type-context-in-java)
+
 ## Method Reference
 
 Method references are a special type of lambda expressions. Each time when lambda expression is used to just referring a method of a functional interface,  lambda expression can be replaced by method reference, but instead of providing a method body, they refer an existing method by name.
@@ -108,7 +115,6 @@ Messageable hello = Message::new;
 hello.getMessage("Hello");
 
 ```
-
 
 ## Streams
 - A Stream **is** a pipeline of functions that can be evaluated
