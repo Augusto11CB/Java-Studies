@@ -14,6 +14,7 @@ List<MyThread> threads = Stream.iterate(0, n -> n + 1)
 //Calling start method instead of run -> 
 threads.forEach(MyThread::start);
 ```
+
 ## Runnable
 The `Runnable` interface should be implemented by any class whose instances are intended to be executed by a thread. The class must define a method of no arguments called `run`.
 
@@ -58,18 +59,17 @@ runnables.forEach(service::execute);
 service.shutdown();
 ```
 
-
 > About the above code, I've supplied all those runnables, but now I'm not dealing with the low-level threads. Instead, the executor service is managing a pool of threads on my behalf. I am submitting jobs to it and having them delegate them to threads and use the pool in an efficient way and execute everything for me.
 
 ### Executors
 **Factory** and **utility** methods for Executor, ExecutorService, ScheduledExecutorService, ThreadFactory, and Callable classes defined in this package. 
 
 **Some Methods**
-- newCachedThreadPool() - Creates a thread pool that creates new threads as needed, but will reuse previously constructed threads when they are available.
+- `newCachedThreadPool`() - Creates a thread pool that creates new threads as needed, but will reuse previously constructed threads when they are available.
 
-- newFixedThreadPool(int nThreads) - Creates a thread pool that reuses a fixed number of threads operating off a shared unbounded queue.
+- `newFixedThreadPool`(int nThreads) - Creates a thread pool that reuses a fixed number of threads operating off a shared unbounded queue.
 
-- 	newScheduledThreadPool(int corePoolSize) - Creates a thread pool that can schedule commands to run after a given delay, or to execute periodically.
+- 	`newScheduledThreadPool`(int corePoolSize) - Creates a thread pool that can schedule commands to run after a given delay, or to execute periodically.
 
 ### Shutdown 
 An ExecutorService can be shut down, which will cause it to reject new tasks.
@@ -77,6 +77,27 @@ An ExecutorService can be shut down, which will cause it to reject new tasks.
 - shutdown() - method will allow previously submitted tasks to execute before terminating
 
 - shutdownNow() - method prevents waiting tasks from starting and attempts to stop currently executing tasks. 
+
+## Callable
+The _Callable_ interface is a generic interface containing a single _call()_ method – which returns a generic value _V_. The result of _call()_ method is returned within a _Future_ object.
+
+```java
+public class FactorialTask implements Callable<Integer> {
+    int number;
+ 
+    // standard constructors
+ 
+    public Integer call() throws InvalidParamaterException {
+        int fact = 1;
+        // ...
+        for(int count = number; count > 1; count--) {
+            fact = fact * count;
+        }
+ 
+        return fact;
+    }
+}
+```
 
 ## Thread.join()
 
