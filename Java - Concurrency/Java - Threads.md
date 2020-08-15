@@ -86,7 +86,11 @@ public class FactorialTask implements Callable<Integer> {
     int number;
  
     // standard constructors
+    public FactorialTask(int num) {
+		this.number = num;
+	}
  
+    @Override
     public Integer call() throws InvalidParamaterException {
         int fact = 1;
         // ...
@@ -98,6 +102,122 @@ public class FactorialTask implements Callable<Integer> {
     }
 }
 ```
+
+```java
+public class Main {
+	List<Callable<Integer> callablesList= Stream.iterate(0, n -> n + 1)
+	,map(FactorialTask::new)
+	.limit(10)
+	.collect(Collectors.toList());
+
+
+	ExecutorService executor = Executors.newFixedThreadPool(5);
+
+	try {
+		// invokeall, you see that takes a collection of callables.
+		List<Future<Integer>> futuresResults = service.invokeAll(callables)
+		for (Future<String> future: futures) {
+			System.out.println(future.get());
+		}
+
+	} catch (Exception e) {
+		e.printStackTrance();
+	} finally {
+		executor.shutdown();
+	}
+}
+
+```
+
+## X - Coordinating Threads
+
+### ExecutorService
+`Future<?> submit(Runnable task)` - 
+Submits a Runnable task for execution and returns a Future representing that task.  The Future's get method will return null upon _successful_ completion.
+
+
+Here is a class called Counter. A counter wraps an integer called `count`.There are some simple methods in this classe. The first one is called `increment` and it increments the `count` and a `get` method to return it.
+
+```java
+public class Counter {
+	private int count;
+
+	public void increment() {
+		count++;
+	}
+	
+	public int getCount() {
+		return count;
+	}
+}
+```
+
+```java
+public void demoCounter() {
+	ExecutorService executor = Executors.newCachedThreadPool();
+
+	IntStream.range(0,1000)
+		.foreach(i -> service.submit(counter::increment));
+
+service.shutdown();
+sout(counter.getCount());
+	
+}
+```
+But the problem in the above code is that the **increment** method is being executed by all these different threads all at the same time. And it's very possible that one could get in there and increment, because this thing is actually multiple calls. And it's not thread safe.
+
+### How to Coordenate Operations - Synchronized Method (Implicit Look)
+
+How synchronized methods works is that when a thread enters a synchronized method, it acquires the lock on that object (**this is an implicit lock**). It's a built-in lock associated with the object, and *when a particular thread has acquired the lock, no other thread can get in any of the other synchronized methods until that first method completes and releases the lock.* 
+
+```java
+	// 
+public synchronized void increment() {
+	count++;
+}
+
+/*
+public void increment() {
+
+	synchronized (this) {
+		count++;
+	}
+}
+*/
+```
+When calling the previus method `demoCounter`, but using `syncronized` the the class `Counter`. The problem of two or more threads concurrency goes away, because when a thread gets the method to execute, the others will be prevented to execute while the first thread does not finish.
+
+### How to Coordenate Operations - `ReentrantLock` class (Explicit Look)
+`ReentrantLock` class  has two methods to perform synchronization. They are `lock()` and `unlock()`
+
+```java
+private ReentrantLook lock = new ReentrantLook();
+
+public synchronized void increment() {
+	lock.lock();
+	try {
+		count++;
+	} finally {
+		lock.unlock();
+	}
+}
+```
+
+#### ReentrantLock's `tryLock()` methods
+TODO
+
+### How to Coordenate Operations - Atomic Classes
+These Atomic classes are wrappers that hold some kind of type variable, such as String, boolean etc. It makes sure that any update on it happens atomically in the transactional sense
+
+```java
+private AtomicInteger count = new AtomicInteger(0);
+
+public synchronized void increment() {
+	count.incrementAndGet();
+}
+```
+### How to Coordenate Operations - `CountDownLatch` class
+
 
 ## Thread.join()
 
