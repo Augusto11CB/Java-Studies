@@ -7,7 +7,7 @@ The method `start` is a method in the `Thread` class that sets up all the mechan
 
 ```java
 List<MyThread> threads = Stream.iterate(0, n -> n + 1)
-	,map(MyThread::new)
+	.map(MyThread::new)
 	.limit(10)
 	.collect(Collectors.toList());
 
@@ -48,7 +48,7 @@ Executes the given command at some time in the future. The command may execute i
 
 ```java
 List<CustomRunnable> listRunnables = Stream.iterate(0, n -> n + 1)
-	,map(CustomRunnable::new)
+	.map(CustomRunnable::new)
 	.limit(10)
 	.collect(Collectors.toList());
 
@@ -74,9 +74,9 @@ service.shutdown();
 ### Shutdown 
 An ExecutorService can be shut down, which will cause it to reject new tasks.
 
-- shutdown() - method will allow previously submitted tasks to execute before terminating
+- `shutdown()` - method will allow previously submitted tasks to execute before terminating
 
-- shutdownNow() - method prevents waiting tasks from starting and attempts to stop currently executing tasks. 
+- `shutdownNow()` - method prevents waiting tasks from starting and attempts to stop currently executing tasks. 
 
 ## Callable
 The _Callable_ interface is a generic interface containing a single _call()_ method – which returns a generic value _V_. The result of _call()_ method is returned within a _Future_ object.
@@ -106,7 +106,7 @@ public class FactorialTask implements Callable<Integer> {
 ```java
 public class Main {
 	List<Callable<Integer> callablesList= Stream.iterate(0, n -> n + 1)
-	,map(FactorialTask::new)
+	.map(FactorialTask::new)
 	.limit(10)
 	.collect(Collectors.toList());
 
@@ -217,9 +217,70 @@ public synchronized void increment() {
 }
 ```
 ### How to Coordenate Operations - `CountDownLatch` class
+- TODO
+
+## Producer–Consumer Problem
+> The producer–consumer problem (also known as the bounded-buffer problem) is a classic example of a multi-process synchronization problem. The problem describes *two processes*, the producer and the consumer, who share a common, fixed-size buffer used as a *queue.* The producer's job is to generate data, put it into the buffer, and start again. At the same time, the consumer is consuming the data (i.e., removing it from the buffer), one piece at a time. The problem is to make sure that the producer won't try to add data into the buffer if it's full and that the consumer won't try to remove data from an empty buffer.
+> \- [Wikipedia - Producer–Consumer Problem](https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem)
+
+### The java `BlockingQueue<T>` Data Structure
+BlockingQueue is a queue that additionally supports operations that **wait for the queue to become non-empty** when retrieving an element, and **wait for space to become available** in the queue when storing an element.
+
+```java
+class Producer implements Runnable {
+    private final BlockingQueue queue;
+
+    Producer(BlockingQueue q) {
+        queue = q;
+    }
+
+    public void run() {
+        try {
+            while (true) {
+            //wait for space to become available in the queue when storing an element.
+                queue.put(produce());
+            }
+        } catch (InterruptedException ex) { ...handle ...}
+    }
+
+    Object produce() { ...}
+}
+
+class Consumer implements Runnable {
+    private final BlockingQueue queue;
+
+    Consumer(BlockingQueue q) {
+        queue = q;
+    }
+
+    public void run() {
+        try {
+            while (true) {
+            //wait for the queue to become non-empty when retrieving an element
+                consume(queue.take());
+            }
+        } catch (InterruptedException ex) { ...handle ...}
+    }
+
+    void consume(Object x) { ...}
+}
+
+class Setup {
+    void main() {
+        BlockingQueue q = new SomeQueueImplementation();
+        Producer p = new Producer(q);
+        Consumer c1 = new Consumer(q);
+        Consumer c2 = new Consumer(q);
+        new Thread(p).start();
+        new Thread(c1).start();
+        new Thread(c2).start();
+    }
+}
+```
 
 
 ## Thread.join()
+- TODO 
 
 ## References
 [Advanced Java Development](https://learning.oreilly.com/videos/learning-path-mastering/9781491970812/9781491970812-video256559)
