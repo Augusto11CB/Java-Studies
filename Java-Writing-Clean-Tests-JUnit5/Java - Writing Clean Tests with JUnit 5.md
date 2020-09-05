@@ -1,5 +1,16 @@
 # Java - Writing Clean Tests with JUnit 5
 
+## TODO List
+- The Annotation @DisplayName
+- TestsSuits
+- Repeatable Tests
+- Dynamic	Tests
+- Parameterized Tests 
+- @ArgumentsSource
+- What's the difference between / advantage of using JUnit 5's @ParametrizedTest over @TestFactory Stream<DynamicTest>?
+- Extension Points
+
+## Material To Study
 - [Modern Best Practices for Testing in Java](https://phauer.com/2019/modern-best-practices-testing-java/)
 - [Writing clean tests ](https://www.petrikainulainen.net/writing-clean-tests/)
 - [JUnit 5 -  the ultimate resource](https://www.petrikainulainen.net/junit-5-the-ultimate-resource/)
@@ -209,8 +220,12 @@ public class NestedTestSimpleExample {
 ### Test Interfaces and Default Methods
 
 ### Repeatable Tests
+- TODO
 
 ### Dynamic	Tests
+- TODO -  Read more about this topic
+	- [Dynamic Testing in JUnit 5; a Practical Guide](https://medium.com/@BillyKorando/dynamic-testing-in-junit-5-a-practical-guide-a57e3ceaa240)
+
 The standard tests annotated with _@Test_ annotation are static tests which are fully specified at the compile time. **A  _DynamicTest_  is a test generated during runtime**.
 
 > It is composed of a *display name* and an  `Executable`.  `Executable`  is a functional interface which means that the implementations of dynamic tests can be provided as lambda expressions or method references.
@@ -255,7 +270,7 @@ Stream<DynamicTest> dynamicTestsFromStreamInJava8() {
 ```
 
 ### Parameterized Tests 
-//TODO -  Add parameterized tests
+- TODO -  Add parameterized tests
 
 #### Dynamic Tests vs Parameterized Tests
 Dynamic tests differ from the parameterized tests as they support full test lifecycle, while parametrized tests don't.
@@ -378,7 +393,12 @@ void discountShouldBeApplied(
 }
 ```
 
+### [What's the difference between / advantage of using JUnit 5's @ParametrizedTest over @TestFactory Stream<DynamicTest>?](https://stackoverflow.com/questions/54922345/whats-the-difference-between-advantage-of-using-junit-5s-parametrizedtest-o)
+- TODO 
+
 ### Extension Points
+- TODO - Review this topic
+
 JUnit Jupiter extensions can declare interest in certain junctures of the test life cycle. When the JUnit Jupiter engine processes a test, it steps through these junctures and calls each registered extension.
 
 Each extension point corresponds to an interface and their methods take arguments that capture the context at that specific point in the test’s lifecycle.
