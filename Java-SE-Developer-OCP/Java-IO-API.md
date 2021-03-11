@@ -207,3 +207,102 @@ Class `Files` provides operations that handle path objects
 - Class `Files` can create and read symbolic links
 
     ![](resources/navigating-the-filesystem.png)
+
+### Analyse Path Properties
+Class `files` provides operations to retrive path object properties.
+
+```
+Path p1 = Path.of("/users/augusto/docs/some.txt")
+Files.isDirectory(p1) //false
+Files.isExecutable(p1) //false
+Files.isHidden(p1) // false
+Files.isReadable(p1) //true
+Files.isWritable(p1) //true
+Files.isRegularFile(p1) //true
+Files.isSymbolicLink(pn)
+Files.isSameFile(p1,pn)
+
+PosixFileAttributes fa = Files.readAttribuites(p1, PosixFileAttributes.class);
+long size = fa.size();
+
+FileTime t1 = fa.creationTime()
+// fa has lots of other methods
+```
+
+### Set Path Properties
+Modify path object properties using class `Files`
+TODO: Add print
+
+### Create Paths
+Class `Files` provides operations to create folders and files
+TODO: Add print
+
+### Create Temporary Files and Folders
+Class `Files` provides operations to create temporary files and folders
+
+### Copy and Move Paths
+Class `Files` provides operations to copy and move folders and files
+- **copy** creates a replica of the path object
+- **move** deletes a path after copying it
+
+TODO: Add print
+
+PS: Copying a folder does not copy its subfolder and files
+PS: Moving a folder does move all of its subfolders and files and auto-creates a target folder
+
+### Delete Paths
+Class `Files` provides operations to delete folders and files
+- `delete` and `deleteIfExists` delete files and folders
+- Attempting to delete a non-empty directory throws an exception
+
+PS: **You cannot delete a folder if it is not empty**
+
+```java
+Path backup = Path.of("backup");
+Files.walk(backup)
+	.sorted(Comparator.reverseOrder()) // When processing the stream it will start from a leaf element of the folders and files tree structure and go upwards
+	// So in this case we are deleting first those files that are in the botton of the system tree
+	.forEach(path ->{
+		try {
+			Files.Delete(path)
+		} catch(IOException ex) {
+			// log something
+		}
+	})
+```
+
+### Handle Zip Archives
+The `ZipInputStream` and `ZipOutPutStream` enable reading and writing zip files. 
+TODO Add print
+
+### Represent Zip Archive as a FileSystem
+`FileSystem` mechanism can be used to represent archives;
+You may create, copy, move, delete and navigate archived paths just like any other path
+
+- In the example, all files and folders are copied from joe to the joe.zip file.
+- Unfortunately, the zip file system provider is not implemented to compress files as they are when added to the archive
+
+TODO Add print
+
+### Access HTTP Resources
+Java IO is a foundation of many other APIs such as HTTP Client API.
+- Classes in java.net.http package provide HTTP client functionalities
+- Handle HTTP methods: GET/POST/PUT/DELETE/ETC...
+- Supports authentication, encryption, and proxies
+- Supports both synchronous and asynchronous modes
+
+```java
+module demos {
+	requires java.net.http
+}
+Path path = Path.of("docs", "index.html");
+URI uri = URI.create("http://somesite.com");
+
+HttpRequest req = HttpRequest.newBuilder(uri).GET().build();
+HttpClient client = HttpClient.newHttpClient();
+HttpResponse<Path> res = client.send(req, HttpResponse.BodyHandlers.ofFile(path));
+
+```
+
+- The example above shows an html document downloaded into a file.
+
