@@ -82,6 +82,8 @@ The `Monitor` object helps to coordinate order of execution of threads
 - it allows threads to enter blocked or waiting states
 - it enables mutual exclusion of threads and signaling mechanisms
 
+- **THREADS ARE BLOCKED AGAINST MONITORS** (`synchronized`)
+
 Keyword `synchronized` enforces exclusive access to the block of code
 - Thread that first enterns the `synchronized block`  remais in **runnable state**
 - All other threads accessing the same block enter the **block state**
@@ -116,3 +118,113 @@ Runnable r = () -> {
 
 ### apply `synchronized` keyword in a block of code inside a method
 
+## Make Thread Wait Until Notified
+Suspend a thread waiting indefinitely
+- method `wait` puts a thread into `waiting state` against **specific monitor**
+- any number of threads can be waiting against the same monitor
+
+- method `notify` wakes up one of the waiting threads (stochastic)
+- method `notifyAll` wakes up all waiting threads currently in a waited state against a given monitor
+	- threads waits until another thread tells the monitor object against which this thread is waiting that the thread is allowed to resume
+	- **throws an `InterruptedException` when you call the method 'notify' of the monitor**
+- methods `wait, notify, notifyAll` must be invoked within `synchronized` blocks against the same monitor
+
+```java
+Some s = new Some();
+Runnable r = () -> {
+	try{
+		synchronized (s) {
+		    s.wait(); // Throws an InterruptedException when you call the method 'notify' of the monitor object  
+		}
+	} catch(InterruptedException ex) {...}
+  }
+}
+
+Thread t = new Thread(r);
+t.start();
+try{
+	Thread.sleep(1000);
+} catch(InterruptedException ex) {...}
+
+synchronized (s) {
+	s.notify;
+}
+```
+
+## Common Thread Properties
+- Thread could be given a custom name using constructor and `set/get name` methods
+- Thread has a unique id
+- Thread can be marked as a **deamon** or a **user** (default) thread
+	- deamon
+- Thread may wait for another thread to terminate
+- Thread could be assigned a priority
+
+- Priority determines the number of CPU time slots the thread scheduler allocates to this thread, but it cannot guarantee the order of execution
+- The JVM exits when the only remaining threads still running are all daemon threads
+- Method `setDaemon` muust be invoked before the thread is started
+
+- `join()` waits for the thread to terminate
+	- It allows to put threads in certain order
+
+```java
+Runnable r = () -> { ... };
+Thread t = new Thread(r);
+t.start();
+try{
+	t.join(); // wait for the thread to terminate
+} catch(InterruptedException ex) {...}
+```
+
+## Create Executor Service Objects
+Class `java.util.concurrent.Executors` provides a number of thread management automations using different `ExecutorService` objects:
+- **fixed thread pool** reuses a fixed number of threads;
+- **work stealing pool** maintains enough threads to support the given parallelism level
+- **single thread executor** uses a single worker thread
+- **cached thread pool** creates new threads as needed or reuses existing threads
+- **scheduled thread pool** schedules tasks to execute with a deplay and/or periodically
+- **single thread scheduled executor** schedules tasks to execute with a delay using a single worker thread
+- **unconfigurable executor service** provides a way to freeze another ExecutorService configuration. It does not allow reconfigure other ExecutorsServices already being in use (make it final but for everything)
+
+```java
+Runnable r = () -> { ... };
+ScheduuledExecutorService ses = Executors.newScheduledThreadPool(3);
+
+// Scheduules a Runnable task to be executed very 5 seconds with initial delay of 10 seconds
+ses.scheduleAtFixedRate(task, 10, 5 TimeUnit.SECONDS); // Schedule one or more tasks, with different delays and periods using the same thread pool.
+
+ExecutorService es = Executors.unconfigurableExecutorService(ses); // Freezes the configuration of the executor service to prevent any changes
+t.start();
+try{
+	t.join(); // wait for the thread to terminate
+} catch(InterruptedException ex) {...}
+```
+
+### Manage Executor Service Life Cycle
+![](resources/thread-manage-executor-service-life-cycle-example.png)
+
+## Implementing Executor Service Tasks
+`ExecutorService` supports two types of taks implementations:
+- Runnable Objects
+	- implementing `public void run();` method of `Runnable` interface
+	- Launched using execute or submit methods of the `executorService`
+- Callable objects
+	- implementing `public <T> call() throws Exception;` method of `Callable` interface
+	- launched using `submit` method of the `ExecutorService`
+	- returned value is wrapped into the `Future` object, which is returned immediately
+	- method `get` blocks invoking thread until timeout our when the value within the `Future` object becomes available
+
+```java
+Callable<String> t = new Callable<>() {
+	public String call() throws exception {
+			return "some value";
+			
+		}};
+```
+
+```java		
+ExecutorService es = Executor.newFixedThreadPool(10);
+Future<String> result = es.submit(t);
+try {
+	String value = result.get(10, TimeUnit.SECONDS);
+} catch(Exception ex) {...}
+```
