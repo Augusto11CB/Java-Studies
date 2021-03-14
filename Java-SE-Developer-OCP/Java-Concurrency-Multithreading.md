@@ -228,3 +228,98 @@ try {
 	String value = result.get(10, TimeUnit.SECONDS);
 } catch(Exception ex) {...}
 ```
+
+## Locking Problems
+The below problems normally occur because of the attempt to control the threads execution order
+### Starvation
+```java
+syncronized(a){
+	// actions taking a very long time
+}
+```
+- Thread is waiting for a resource blocked by another busy thread
+
+### Livelock
+```java
+while(b.isOver()){
+	// do A actions
+}
+aOver = true;
+```
+
+```java
+while(b.isOver()){
+	// do b actions
+}
+bOver = true;
+```
+- "Threads that are very polite to each other"
+- Threads form an indefinite loop, expecting confirmation of completion from each other
+
+### Deadlock
+```java
+syncronized(a){
+	syncronized(b){}
+}
+```
+```java
+syncronized(b){
+	syncronized(a){}
+}
+```
+- The dedadlock situation occurs when you are using diffenrent object monitors for synchronized blocks in reverse order
+- Two or more threads are blocked forever, waiting for each other
+
+## Writing Thread-Safe Code
+Stack values such as **local variables and methods arguments are _thread-safe_**
+- each thread operates with its own stack
+- no other thread can see this portion of memory
+
+**Immutable** objetcs in a shared heap memory are thread-safe because they cannot be changed at all
+**Mutable** objects in a shared heap memory are **thread-unsafe** 
+- Heap memoryu is shared between all threads
+- Heap values undergoing modifications may be
+	- *inconsistent* - observed by other threads before modification is complete
+	- *corrupted* - partially changed by another threads writing to memory at the same time
+- Compiler may choose **cache heap value locally** within a thread, **causing a thread not to notice that data has been changed by another thread**.
+
+## Ensure Consistent Access to Shared Data
+Compiler may choose **cache heap value locally** within a thread, **causing a thread not to notice that data has been changed by another thread**.
+
+Disable compiler optimization that is caching the shared value locally within a thread
+Keyword `volatile` instructs Java compiler:
+- **Not to cache the variable value locally**
+- Always read it from the main memory
+- Applies all changes to the main memory that occurred in a thread before the update of the volative variable
+```java
+public class Some {
+	public int x;
+	public volatile int y;
+}
+```
+```java
+Shared s = new Shared();
+new Thread (() -> {
+	while(s.y < 1) {
+		int x = s.x;
+	}
+}).start();
+
+new Thread(() -> {
+	s.x=2;
+	s.y=2;
+}).start();
+```
+
+- The while loop in the example could become indefinite without the `volatile` instruction if compiler chooses to cache variable `y` locally
+- Even with the volative keyword, it is not really possible to predict how many iterations this while loop is going to perform, because there is no way to tell the order in which these threads would get CPU time to execute their instructions
+
+## Non-Blocking Atomic Actions
+> What is an atomic action?
+> Answer: An atomic action is an action that you can perform within a single CPU time cycle without being interrupted.
+
+
+
+
+
+
