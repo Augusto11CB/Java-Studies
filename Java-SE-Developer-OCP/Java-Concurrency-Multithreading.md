@@ -318,8 +318,157 @@ new Thread(() -> {
 > What is an atomic action?
 > Answer: An atomic action is an action that you can perform within a single CPU time cycle without being interrupted.
 
+- Atomic actions cannot be interveaved
+- Only actions performed by a CPU in a single cycle are by default atomic
+- Variable assignments are atomic actions, except `long` and `double`; these are 64-bit values, and it takes more than a single step to assign these on a 32-bit platform
+- Other operations such as `+ - / * % ++ -- etc.` are not atomic
+- Package `java.util.concurrent.atomic` provides classes that implement lock-free thread safe programming of atomic behabiors on single variables, for example:
+	- `AtomicBoolean`
+	- `AtomicInteger`
+	- `AtomicLong`
+	- `AtomicReference<V>`
+- Atomic variables also behave as if they are volatile
+- **How it works?** 
+	- Take a value from the heap, create the representation of this value which will be local to a particular thread so no other thread can look at it.
+	- If an interruption occurs, No Problem.. as the modifications are being done in the local stack of a single thread, then it will be visible to nobody
+	- when the operations over the value copied from the heap are resume and completed, then the memory can be synchronized with the main memory
+	- **From the perspective of another thread the action apperars as if it is not interrupted, as if it was complete (although, internally, maybe it was interrupted)**
+```java
+public class Shared {
+	public AtomicInteger x = new AtomicInteger(0);
+}
+```
+```java
+Shared s = new Shared();
+
+Runnable r = () -> {
+	int y = 0;
+	while(y < 10) {
+		y = s.x.incrementAndGet();
+	}
+};
+
+new Thread(r).start();
+new Thread(r).start();
+```
+
+## Ensure Exclusive Object access using Intrinsic Locks
+Use intrinsic lock to enforce an exclusive access to a shared object
+- Order of execution and object consistency are ensured
+- syncronized logic creates a bottleneck in a multhreaded application
+- Performance and scalability can be asignificatly degraded
+
+### Example
+```java
+List<String> list = new ArrayList<>();
+Runnable r = () -> {
+	String name = Thread.currentThread().getName();
+	for (int i = 0; i < 10; i++) {
+		synchronizes(list) {
+			list.add(name+' '+i);
+		}
+	}
+};
+
+for (int i = 0; i < 10; i++ {
+	new Thread(r).start();
+}
+```
+
+### Example variation using = `SynchronizedList(myList)`
+```java
+List<String> list = new ArrayList<>();
+List<String> sList = Collections.synchronizedList(list);
+Runnable r = () -> {
+	String name = Thread.currentThread().getName();
+	for (int i = 0; i < 10; i++) {
+			sList.add(name+' '+i);
+	}
+};
+Thread[] threads = new Thread[10];
+for (int i = 0; i < 10; i++ {
+	threads[i] = new Thread(r);
+	threads[i].start();
+}
+
+for (Thread t : threads) {
+	try {
+		t.join();
+	} catch (InterruptedException ex) {....}
+}
+
+// Iterating through the synchronized collection would still require an explicit synchronized block
+synchronized (sList) {
+	iterator i = sList.iterator();
+	while(i.hasNext())
+		sout(i,next());
+}
+```
+
+## Non-Blocking Concurrency Automation
+Package `java.util.concurrent` provides classes to manage concurrency
+- for exemple, classes such as `CopyWriteArrayList` or `CopyOnWriteArraySet` provide thread-safe variants of list and Set
+	- All mutative operations (add, remove, etc) make fresh copies of the underlying collection
+	- The read-only snapshot of merge content is used for traversal
+- **It is best suited for small collections, where read-only operations vastly outnumber mutative operations and prevent interference threads during traversal**. Imagine the situation when there are a lot of writters, it will demand a lot of our computational resources, mainly because of the feature of made copies of the list before modifications.
+```java
+List<String> list = new ArrayList<>();
+List<String> copyOnWrite = new CopyOnWriteArrayList<>(list);
+Runnable r = () -> {
+	String name = Thread.currentThread().getName();
+	for (int i = 0; i < 10; i++) {
+			sList.add(name + ' ' + i);
+	}
+};
+
+Thread[] threads = new Thread[10];
+for (int i = 0; i < 10; i++ {
+	threads[i] = new Thread(r);
+	threads[i].start();
+}
+
+for (Thread t : threads) {
+	try {
+		t.join();
+	} catch (InterruptedException ex) {....}
+}
+
+// Iterating through the synchronized collection would still require an explicit synchronized block
+synchronized (copyOnWrite) {
+	iterator i = copyOnWrite.iterator();
+	while(i.hasNext())
+		sout(i,next());
+}
+```
+
+## Alternative Locking Mechanisms
+Locking API provides more flexible programmatic concurrency controll mechanisms
+- Allows actions to be performed on an object, without interference from other threads
+- available from th e `java.util.concurrent.locks` package
+- write lock prevents other threads from concurrently modifying the object
+- read lock can be acquired if write lock is not held by another thread, allowing concurrent read actions
 
 
+```java
+public class PriceList {
 
-
-
+	private List<Product> menu = new ArrayList<>();
+	private ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+	private Lock rl = rwl.readLock();
+	private Lock wl = rwl.writeLock();
+	public Product get(int id) {
+		rl.lock();
+		try { return menu.stream().findFirst(p -> p.getId() == id); }
+		finally {
+			rl.unlock();
+		}
+	}
+	public Product set(Product p) {
+		wl.lock();
+		try { return menu.add(product); }
+		finally {
+			wl.unlock();
+		}
+	}
+}
+```
