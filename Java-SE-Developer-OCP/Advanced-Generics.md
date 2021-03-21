@@ -50,5 +50,46 @@ List<Product> listOfProdct = new ArrayList<>();
 
 //Nothing could be added to this list, except null
 List<?> listOfUnknownType = listOfProducsts;
-
 ```
+
+### Upper Bound WildCard
+Upper bounded wildcard `<? extends ParentType>` allows use of subtype collections.
+- A list of specific type `List<Product>` 
+	- Is writable - you can add instances of `Product, Food and Drink` to such a list
+	- Is invariant - you **cannot** assign a `List<Drink>` or `List<Food>` to such a list
+- A list of super type and descendents `List<? extends Product>` 
+	- Is read only - no values (except null) can be added to such a list
+	- is covariant - you can assign a `List<Drink>` or `List<Food>` to such a list
+
+![](resources/uper-bound-wildcard.png)
+
+### Lower Bound WildCard
+Lower bounded wildcard `<? super Typer>`allows to use this type and its parents.
+- A list of specific type `List<Product>`
+	- is invariant - you **cannot** assign a `List<Drink>` or `List<Food>` to such a list
+- A list of type and its parents `List<? super Food>` 
+	- Is writable - you can add instances of Objects, Product and Food to suuch a list
+	- Is **contra-variant** - you can assign a `List<Food> or List<Product>, List<Object>` to such a list
+
+![](resources/lower-boud-wildcard.png)
+
+## Collections And Generics Best Practices
+Collections and generics wildcards best practices:
+
+- When class hierarchy (super/sub types) is irrellevant
+	- Use specific type `<SpecificType>` invariant, read-write generics
+	- This allows type-safe read-write access to the collection
+
+-  When collection is a **consumer** of values and your code needs to be type-hierarchy aware
+	- Use `<? super LowerBoundType>` **Contravariant**, **Writable** generics
+	- This allows type-safe addition of new values to the collection
+	- **For situations when you want to write information to a collection**
+	- **consumer** from the perspective of the collection
+
+- When collection is a **producer** of values and your code needs to be type-hierarchy aware 
+	- Use **<? extends UpperBoundType>** covariant, read-only generics
+	- This allows type-safe retrieval of values from the collections
+	- Avoid using raw types
+	- **producer** from the perspective of the collection
+
+![](resources/collections-and-generics-best-practices.png)
