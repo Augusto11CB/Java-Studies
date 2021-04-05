@@ -21,7 +21,7 @@ Collection API presents a number of classes that maniputale groups of objects (c
 - Collection API classes implement these interfaces and can provide different combinations of capabilities
 
 ## Java Collection API Interfaces and Implementation Classes
-![](resources/collection-api-interfaces)
+![](resources/collection-api-interfaces.png)
 
 ## Create List Object
 The class `ArrayList` implements `List` interface.
