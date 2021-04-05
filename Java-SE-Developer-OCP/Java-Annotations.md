@@ -91,3 +91,32 @@ Annotation may be used to validate class or interface design
 - verify that a method actually overrides a parent operation
 	- subclass must match the signature of the parent class method
 	- the `@Override` annotation prevents subclass from compiling if this rule is broken
+
+## Deprecated Annotation
+![](resources/deprecated-annotation.png)
+
+## Suppress Compiler Warning
+Indicate that compiler warning should be suppressed for the annotated element.
+- warning can be suppressed on a class or specific method level
+- unchecked warnings are caused by assignment of **raw-type** object to **generic-type** variable
+- deprecated warnings are caused by the use of out-of-date APIs
+
+![](resources/suppress-compiler-warnings.png)
+- compiler is unable to perform type safety check on the raw object.
+- In the above example, method `find` return a **raw** type of `List` with Objects of type `Food` and `Drink`. When invoking method `find` the compiler will give a **warning** and  suppressing compiler warnings could be dangerous.
+
+## Var-args and Heap Pollution
+incorrect use of var-args with generics can lead to heap pollution
+- var-arg essentially an array, so it can be assigned to an array of object (arrays are covariant)
+- Array of objects allows adding of elements that are not of a type expected by a generic declaration
+- `ClassCastException` may occur when trying to get elements from the collection
+
+Annotation `@SafeVarargs` suppresses heap-pollution warning when using var-args
+- ensure that your code does not produce actual healp pollution
+- annotated method must be `private` or `final` to maintain type safety guarantee.
+
+![](resources/heap-pollution-avoidance.png)
+1. If something like (1) happens (adding an array of a different type)
+2. when we do like (2) an exception is thrown
+3. but the compiler, in order to help, give us a warning about a possible problem like (1) and (2)
+4. if we are sure that there will be no operations like (1), we can use the annotation  `@SafeVarargs` to turn off the compile warning.
