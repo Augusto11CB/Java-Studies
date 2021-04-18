@@ -86,3 +86,50 @@ Stream.generate(<supplier>)
 Map<Product, Integer> items = ...;
 items.forEach((p,q) -> p.getPrice().multiply(BigDecimal.valueOf(q.intValue())));
 ```
+
+## Perform Actions with Stream Pipeline Elements
+- Intermediate or terminal actions are handled by **peek** and **forEach**
+- Operations `peek, forEach, and forEachOrdered` accept Consumer<T> interface
+- Lambda expression must implement abstract `void accept(T t)` method
+- Default  `andThen` method provided by the `consumer` interface combines concumers together.
+- Differencec between `forEachOrdered` and `forEach` is that the last one does not guarantee respecting the order of elements, which is actually beneficial for parallel stream processing.
+
+**Example**
+```java
+Consumer<Product> expireProduct = (p) -> p.setBestBefore(...)
+Consumer<Product> discountProduct = (p) -> p.setDiscount(...)
+
+list.stream().forEach(expireProduct.andThen(discountProduct));
+
+list.stream()
+	.peek(expireProduct).
+	.filter(p.getPrice().compareTo(...) > 0)
+	.forEach(discountProduct);
+```
+
+## Perform Filtering of Stream Pipeline Elements
+- method `filter` accepts `Predicate<T>` interface and teturns a stream comprising only elements that satisfy the filter criteria
+- lambda expression must implement abstract method `boolean test (T t)`
+- default methods provided by the `Predicate`:
+  - `and` ~ &&
+  - `or` ~ || 
+  - `negate` returns a predicate that represents the logical negation of this predicate
+- Static methods provided by the `Predicate` interface
+  - `not` returns a predicate that is the negation of the supplied predicate
+  - `isEqual` returns a predicate that compares the supplied object with the contents of the collection
+
+```java
+Consumer<Product> discountProduct = (p) -> p.setDiscount(...)
+Predicate<Product> foodFilter = (p) -> p istanceof Food;
+Predicate<Product> priceFilter = (p) -> p.getPricec().compareTo(...) < 0;
+
+list.stream()
+		.filter(foodFilter.negate().or(priceFilter))
+		..forEach(discountProduct);
+
+list.stream()
+	.peek(expireProduct).
+	.filter(p.getPrice().compareTo(...) > 0)
+	.forEach(discountProduct);
+```
+
