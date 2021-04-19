@@ -133,3 +133,57 @@ list.stream()
 	.forEach(discountProduct);
 ```
 
+## Perform Mapping of Stream Pipeline Elements
+- Map stream elements to a new stream of different content type using `map` operation
+- Method `map` accepts a `Function<T,R>` interface and returns a new stream comprising elements produced by this function based on the original stream content
+- lambda impmenets `R apply (T t)` method
+- default methods provided by the function:
+  - `andThen` and `compose` combine functions together
+  - `compose` does the exact same thing in the oposite direction of the method `andThen`
+- Static methods provided by the `Function` interface
+  - `identity` returns a function that always returns its input argument (equivalent of t->t function).
+- Primitive variants of map are: `mapToInt`, `mapToLong`, etc.
+
+```java
+Function<Product, String> nameMapper = (p) -> p.getName();
+UnaryOperator<String> trimMapper = n -> n.trim();
+ToIntFunction(String) lengthMapper = n -> n.lenght();
+
+list.stream()
+		.map(nameMapper.andThen(trimMapper))
+		.mapToInt(lenghtMapper)
+		.sum();
+```
+
+## Join Streams Using `flatMap` Operation
+- Flatten a number of streams into a singleStream
+- Operation `Stream<R>` flatMap `(Function<T, Stream<R>> f)` merges streams
+- primitive variantes are: `flatMapToInt, flatMapToLong`, etc.
+
+![](./resources/flatMap-stream-example.png)
+
+## Aggregate Stream Data using `reduce` Operation
+- Produce a **single** result from the stream of values using reduce operation.
+- `Optional<T> reduce(BinaryOperator<T> accumulator)` performs accumulation of elements
+- `T reduce(T identity, BinaryOperator<T> accumulator)` performs accumulation of elements and has a initial (default) value
+- `<U> U reduce(U identity,  BiFunction<U,T,U> accumulator BinaryOperator<U> combiner)` BiFunction performs both value mapping and accumulation of values. BinaryOperator combines results produced by the BiFunction in parallel stream handling mode.
+
+```java
+list.stream()
+	.parallel()
+	.reduce("", (s,p)-> p.getName()+ " " + s, (s1,s2) -> s1 + s2)
+	// reduction with initial (default) value and a parallel combiner
+```
+
+## General Logical of the `collection` Operation
+- perform a mutable reduction operation on the elements of the stream
+- method `collect` accepts Collector interface implementation, which:
+  - Produces new result containers using `Supplier`
+  - Accumulates data elements into these result containers using `BiConsumer` 
+  - Combines result containers using `BinaryOperator`
+  - Optionally performs a final transform of the processing result using the `Function`
+- Class `Collectors` presents a number of predefined implementations of the `Collector` interface
+
+```
+stream.collect(<supplier>, <accumulator>, <combiner>)
+```
